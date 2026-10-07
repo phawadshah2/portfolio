@@ -1,0 +1,179 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import { platformLabel, projectPath, type Project } from '../lib/content';
+
+interface Props {
+  project: Project;
+  /** Wide layout with metrics alongside, for featured placement. */
+  wide?: boolean;
+  delay?: number;
+}
+
+const { project, wide = false, delay = 0 } = Astro.props;
+const { data } = project;
+const href = projectPath(project);
+const metrics = wide ? data.metrics : data.metrics.slice(0, 2);
+const poster = data.cover ?? data.screenshots[0]?.src;
+---
+
+<article
+  class:list={['card card-link project', { wide }]}
+  data-reveal
+  style={`--d: ${delay}`}
+>
+  {
+    poster && (
+      <div class="media">
+        <Image src={poster} alt="" width={wide ? 640 : 480} loading="lazy" />
+      </div>
+    )
+  }
+
+  <div class="body">
+    <p class="eyebrow">
+      {data.kind === 'professional' ? 'Client work' : 'Case study'}
+      {data.demo && <span class="live">· Live demo</span>}
+    </p>
+    <h3 class="headline">
+      <!-- The whole card is clickable through this stretched link. -->
+      <a href={href} class="stretched">{data.name}</a>
+    </h3>
+    <p class="tagline">{data.tagline}</p>
+    {wide && <p class="summary">{data.summary}</p>}
+    <ul class="tags" aria-label="Technologies">
+      {data.tags.map((t) => <li>{t}</li>)}
+    </ul>
+    <p class="platforms muted">{data.platforms.map((p) => platformLabel[p]).join(' · ')}</p>
+    <span class="more" aria-hidden="true">
+      Read the case study <Icon name="arrow-right" />
+    </span>
+  </div>
+
+  {
+    metrics.length > 0 && (
+      <dl class="metrics">
+        {metrics.map((m) => (
+          <div>
+            <dt class="muted">{m.label}</dt>
+            <dd class="stat-value" data-count={m.value}>{m.value}</dd>
+          </div>
+        ))}
+      </dl>
+    )
+  }
+</article>
+
+<style>
+  .project {
+    position: relative;
+    display: grid;
+    gap: 24px;
+    padding: 0;
+    overflow: hidden;
+  }
+  .body {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    padding: clamp(24px, 3vw, 36px) clamp(24px, 3vw, 36px) 0;
+  }
+  .media {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--surface-raised);
+    border-bottom: 1px solid var(--border);
+  }
+  .media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 500ms var(--ease-out);
+  }
+  @media (hover: hover) {
+    .project:hover .media :global(img) {
+      transform: scale(1.03);
+    }
+  }
+  .live {
+    color: var(--success);
+  }
+  .stretched::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+  .stretched:focus-visible {
+    outline: none;
+  }
+  .project:has(.stretched:focus-visible) {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  .tagline {
+    font-weight: 600;
+    font-size: 1.0625rem;
+  }
+  .summary {
+    color: var(--text-2);
+  }
+  .platforms {
+    font-size: 0.875rem;
+  }
+  .more {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .more :global(.icon) {
+    transition: transform var(--t-hover) var(--ease-out);
+  }
+  @media (hover: hover) {
+    .project:hover .more :global(.icon) {
+      transform: translateX(4px);
+    }
+  }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin: 0;
+    padding: 0 clamp(24px, 3vw, 36px) clamp(24px, 3vw, 36px);
+  }
+  .metrics div {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 2px;
+  }
+  .metrics dt {
+    font-size: 0.875rem;
+  }
+  .metrics dd {
+    margin: 0;
+  }
+
+  @media (min-width: 1080px) {
+    .wide {
+      grid-template-columns: 3fr 2fr;
+      gap: 0;
+    }
+    .wide .media {
+      grid-column: 1 / -1;
+      aspect-ratio: 21 / 9;
+    }
+    .wide .body {
+      padding-bottom: clamp(24px, 3vw, 36px);
+    }
+    .wide .metrics {
+      align-content: center;
+      padding: clamp(24px, 3vw, 36px);
+      border-left: 1px solid var(--border);
+      margin-block: 36px;
+    }
+  }
+</style>

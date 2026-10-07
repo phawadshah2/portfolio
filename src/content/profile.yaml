@@ -1,0 +1,39 @@
+# Everything about you that appears on the site. Edit freely: the build
+# validates this file and stops with a clear message if something is off.
+- id: me
+  name: Fawad Shah
+  role: Senior Flutter Engineer
+  headline: I build Flutter apps that hold up in production.
+  intro: >-
+    Senior Flutter engineer with 5+ years shipping cross-platform apps for
+    Android and iOS, from e-commerce with real payments to real-time
+    monitoring. I care about clean architecture, tests that earn their keep,
+    and apps that start fast.
+  about:
+    - >-
+      I lead mobile development for Star Gallery Mart, a UAE e-commerce app
+      used by 20K+ active users. I own its architecture end to end: checkout
+      and payments (Apple Pay, Google Pay, Stripe, Tabby, Tamara), native
+      integrations through Platform Channels, and the performance work that
+      cut startup time by 35%.
+    - >-
+      Before that I shipped apps for e-commerce and health-tech clients at
+      Tritech Solutions, mentored junior developers, and learned that
+      architecture is mostly about making the next change cheap.
+    - >-
+      Outside work I build small, deliberately engineered projects to sharpen
+      the senior skills: testing strategy, CI/CD, and decisions I can defend in
+      writing. I use AI coding tools daily, and I review their output like any
+      other pull request.
+  location: Sharjah, UAE
+  availability: Open to remote roles
+  email: fawadshah2117@gmail.com
+  linkedin: https://www.linkedin.com/in/fawad-shah-824931183
+  github: https://github.com/phawadshah2
+  # Served from public/. Contains no phone number on purpose.
+  cv: /Fawad-Shah-CV.pdf
+  stats:
+    - { value: '5+', label: years shipping Flutter }
+    - { value: '20K+', label: active users on my current app }
+    - { value: '35%', label: faster app startup }
+    - { value: '25%', label: lower memory usage }

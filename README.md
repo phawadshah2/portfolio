@@ -1,64 +1,93 @@
 # portfolio
 
-Personal site of **Fawad Shah, Senior Flutter Engineer**: a Flutter Web app compiled to WebAssembly.
+Personal site of **Fawad Shah, Senior Flutter Engineer**. Built with
+[Astro](https://astro.build): static HTML, about 2.5 KB of JavaScript, and
+Flutter web builds of my apps embedded as live demos.
 
-The site doubles as a work sample, so it is built like the apps it describes: typed content separated from UI, tests, strict lints, and CI that deploys on merge.
+> The first version was a Flutter Web app (tag `flutter-v1`). It moved to Astro
+> for instant first paint, SEO, and cheap animation, so Flutter now powers the
+> demos instead of the page shell.
 
-## Stack
+## Editing content (no code needed)
 
-| Concern | Choice |
+All copy lives in `src/content/` and is validated at build time. A typo or a
+missing field fails the build with a message pointing at the file.
+
+| File | What it holds |
 |---|---|
-| Rendering | Flutter Web, `--wasm` (skwasm, multithreaded via cross-origin isolation) |
-| Routing | `go_router` with path URLs (`/projects/employee-book`), 404 page |
-| State | `flutter_bloc`. One `ThemeCubit`; content is `const` data, so nothing else needs state |
-| Theming | Material 3 + an `AppPalette` `ThemeExtension` for tokens Material has no slot for |
-| Fonts | Inter, Space Grotesk, JetBrains Mono: bundled, Latin-subset static TTFs (~330 KB total) |
-| Hosting | Firebase Hosting (SPA rewrite + COOP/COEP headers) |
+| `profile.yaml` | Name, headline, intro, about, contact links, CV path, stats |
+| `experience.yaml` | Jobs, newest first (`order`) |
+| `skills.yaml` | Skill groups |
+| `projects/<slug>.md` | One file per project. The file name is the URL: `/projects/<slug>` |
 
-## Structure
+### Adding a project
 
-```
-lib/
-  app/            app widget + router
-  content/        typed models + all site copy (portfolio_content.dart)
-  core/           theme, breakpoints, shared widgets, link helpers
-  features/
-    home/         hero, about, work, experience, skills, contact
-    projects/     case study page, architecture diagram, decision cards
-    not_found/
-web/              index.html (SEO/OG tags, splash, noscript), icons, CV, og-image
-tool/serve.py     serves build/web like production (SPA fallback + headers)
-```
+Copy `src/content/projects/employee-book.md` to `projects/<new-slug>.md` and
+edit it. Required fields: `name`, `tagline`, `summary`, `tags`, `platforms`.
+Everything else is optional and only shows up when filled in:
 
-To change any text on the site, edit `lib/content/portfolio_content.dart`. No widget changes needed.
+- `featured: true` puts it on the home page; `order` sorts it.
+- `links` (repo, Play Store, App Store, website)
+- `cover` and `screenshots`: images stored next to the Markdown file, e.g.
+  `src/content/projects/my-app/home.png`, referenced as `./my-app/home.png`.
+  Astro resizes and compresses them at build time.
+- `video`: a path under `public/`, e.g. `/videos/my-app.mp4`
+- `demo`: a live Flutter web build (see below)
+- `metrics` and `caseStudy` (constraints, architecture, decisions, quality,
+  retrospective, next)
+
+The Markdown body is "The problem" section of the case study.
+
+### Adding a live demo
+
+1. In the app's repo:
+
+   ```bash
+   fvm flutter build web --wasm --release --base-href /demos/<slug>/
+   ```
+
+2. Copy everything in `build/web/` to `public/demos/<slug>/`.
+3. In the project's Markdown: `demo: { url: /demos/<slug>/ }`
+
+The project page shows a phone frame with a **Run the live app** button. The
+build is only downloaded when a visitor clicks it. Firebase serves `/demos/**`
+with cross-origin isolation headers so the multithreaded renderer works when a
+demo is opened full screen.
 
 ## Develop
 
-```bash
-fvm flutter pub get
-fvm flutter run -d chrome
-```
-
-Preview the production build locally:
+Requires Node 24 (`.nvmrc`).
 
 ```bash
-fvm flutter build web --wasm --release && python3 tool/serve.py
+npm install
+npm run dev        # http://localhost:4321
+npm run check      # types + content schemas (CI runs this)
+npm run build      # static site in dist/
+npm run preview    # serve dist/ locally
 ```
 
-Checks (the same ones CI runs):
+## How it is built
 
-```bash
-fvm dart format --set-exit-if-changed . && fvm flutter analyze --fatal-infos && fvm flutter test
-```
+- **Pages:** `src/pages` (home, `/projects`, `/projects/<slug>`, 404).
+- **Motion:** CSS opacity/transform transitions only (no layout work per
+  frame). One `IntersectionObserver` reveals content on scroll
+  (`src/scripts/motion.ts`); stat numbers count up; pages cross-fade with the
+  browser's View Transitions. `prefers-reduced-motion` turns all of it off.
+- **Theme:** light/dark follows the OS until the visitor toggles it; the choice
+  is applied before first paint, so there is no flash.
+- **Fonts:** Inter, Space Grotesk and JetBrains Mono, self-hosted as Latin
+  subset WOFF2 (~128 KB total, no third-party requests).
+- **SEO:** per-page title and description, Open Graph image, JSON-LD `Person`
+  schema; canonical URLs and a sitemap once `SITE_URL` is set.
 
 ## Deploy
 
-CI (`.github/workflows/ci.yml`) runs format, analyze, test and a Wasm build on every PR. The `deploy` job publishes `main` to Firebase Hosting once these are set in the GitHub repo:
+CI (`.github/workflows/ci.yml`) runs `npm run check` and `npm run build` on
+every PR. The `deploy` job publishes `main` to Firebase Hosting once these are
+set in the GitHub repo (Settings → Secrets and variables → Actions):
 
-1. Create a Firebase project and enable Hosting.
-2. Repo **variable** `FIREBASE_PROJECT_ID`: the project id.
-3. Repo **secret** `FIREBASE_SERVICE_ACCOUNT`: JSON key of a service account with the *Firebase Hosting Admin* role.
-
-Until the variable exists, the deploy job is skipped.
-
-After the first deploy, make `og:image` absolute and add `og:url` in `web/index.html` so link previews work everywhere.
+1. Variable `FIREBASE_PROJECT_ID`: the Firebase project id.
+2. Secret `FIREBASE_SERVICE_ACCOUNT`: JSON key of a service account with the
+   *Firebase Hosting Admin* role.
+3. Variable `SITE_URL` (optional until there is a domain), e.g.
+   `https://fawadshah.dev`: enables absolute link-preview URLs and the sitemap.

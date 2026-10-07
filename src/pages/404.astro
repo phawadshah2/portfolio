@@ -1,0 +1,27 @@
+---
+import Button from '../components/Button.astro';
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Page not found">
+  <section class="container lost">
+    <p class="eyebrow" data-reveal>404</p>
+    <h1 class="display-l" data-reveal style="--d: 1">This page does not exist.</h1>
+    <p class="lead" data-reveal style="--d: 2">The link may be old, or the URL has a typo.</p>
+    <div data-reveal style="--d: 3">
+      <Button href="/" icon="arrow-right">Back to home</Button>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .lost {
+    display: grid;
+    gap: 16px;
+    justify-items: start;
+    padding-block: clamp(80px, 15vw, 160px);
+  }
+  .lost > div {
+    margin-top: 16px;
+  }
+</style>

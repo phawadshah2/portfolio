@@ -1,0 +1,347 @@
+---
+import { render } from 'astro:content';
+import ArchitectureDiagram from '../../components/ArchitectureDiagram.astro';
+import Button from '../../components/Button.astro';
+import Icon from '../../components/Icon.astro';
+import ProjectMedia from '../../components/ProjectMedia.astro';
+import Base from '../../layouts/Base.astro';
+import { getProjects, platformLabel, type Project } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props as { project: Project };
+const { data } = project;
+const { Content } = await render(project);
+const study = data.caseStudy;
+
+// Chapters are numbered in the order they actually appear.
+let n = 0;
+const num = () => String(++n).padStart(2, '0');
+const links = data.links;
+const hasMedia = Boolean(data.demo || data.video || data.screenshots.length);
+---
+
+<Base title={data.name} description={`${data.tagline} ${data.summary}`}>
+  <article>
+    <header class="container header">
+      <div data-reveal style="--d: 0; --reveal-offset: 16px">
+        <Button href="/#work" variant="text" icon="arrow-left" leading>All work</Button>
+      </div>
+      <p class="eyebrow" data-reveal style="--d: 1; --reveal-offset: 16px">
+        {data.kind === 'professional' ? 'Client work' : 'Case study'}
+      </p>
+      <h1 class="display-xl" data-reveal style="--d: 2; --reveal-offset: 16px">{data.name}</h1>
+      <div class="intro" data-reveal style="--d: 3; --reveal-offset: 16px">
+        <p class="title">{data.tagline}</p>
+        <p class="lead">{data.summary}</p>
+      </div>
+      <div class="meta" data-reveal style="--d: 4; --reveal-offset: 16px">
+        <ul class="tags" aria-label="Technologies">
+          {data.tags.map((t) => <li>{t}</li>)}
+        </ul>
+        <p class="muted">{data.platforms.map((p) => platformLabel[p]).join(' · ')}</p>
+      </div>
+      <div class="actions" data-reveal style="--d: 5; --reveal-offset: 16px">
+        {data.demo && <Button href="#demo" icon="play">Run the live app</Button>}
+        {
+          links.repo && (
+            <Button
+              href={links.repo}
+              variant={data.demo ? 'secondary' : 'primary'}
+              icon="arrow-up-right"
+              external
+            >
+              Source on GitHub
+            </Button>
+          )
+        }
+        {links.playStore && <Button href={links.playStore} variant="secondary" icon="arrow-up-right" external>Google Play</Button>}
+        {links.appStore && <Button href={links.appStore} variant="secondary" icon="arrow-up-right" external>App Store</Button>}
+        {links.website && <Button href={links.website} variant="secondary" icon="arrow-up-right" external>Website</Button>}
+      </div>
+    </header>
+
+    <div class="container body">
+      {
+        data.metrics.length > 0 && (
+          <dl class="metrics">
+            {data.metrics.map((m, i) => (
+              <div class="card" data-reveal style={`--d: ${i}`}>
+                <dt class="muted">{m.label}</dt>
+                <dd class="stat-value" data-count={m.value}>{m.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )
+      }
+
+      {
+        hasMedia && (
+          <div id="demo">
+            <ProjectMedia project={project} />
+          </div>
+        )
+      }
+
+      <section class="chapter">
+        <div data-reveal>
+          <p class="num">{num()}</p>
+          <h2 class="headline">The problem</h2>
+        </div>
+        <div class="prose" data-reveal style="--d: 1"><Content /></div>
+      </section>
+
+      {
+        study && study.constraints.length > 0 && (
+          <section class="chapter">
+            <div data-reveal>
+              <p class="num">{num()}</p>
+              <h2 class="headline">Constraints</h2>
+            </div>
+            <ul class="list" data-reveal style="--d: 1">
+              {study.constraints.map((c) => <li>{c}</li>)}
+            </ul>
+          </section>
+        )
+      }
+
+      {
+        study?.architecture && (
+          <section class="chapter wide">
+            <div data-reveal>
+              <p class="num">{num()}</p>
+              <h2 class="headline">Architecture</h2>
+              <p class="lead chapter-intro">{study.architecture.intro}</p>
+            </div>
+            <ArchitectureDiagram layers={study.architecture.layers} />
+          </section>
+        )
+      }
+
+      {
+        study && study.decisions.length > 0 && (
+          <section class="chapter wide">
+            <div data-reveal>
+              <p class="num">{num()}</p>
+              <h2 class="headline">Key decisions</h2>
+              <p class="lead chapter-intro">
+                Each one written as a lightweight ADR: the choice, why I made it, and what it costs.
+              </p>
+            </div>
+            <div class="decisions">
+              {study.decisions.map((d, i) => (
+                <section class="card decision" data-reveal style={`--d: ${i % 2}`}>
+                  <p class="eyebrow muted-eyebrow">{d.title}</p>
+                  <h3 class="title">{d.choice}</h3>
+                  <p class="label why">Why</p>
+                  <p class="text">{d.why}</p>
+                  <p class="label">Tradeoff</p>
+                  <p class="text">{d.tradeoff}</p>
+                </section>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      {
+        study && study.quality.length > 0 && (
+          <section class="chapter">
+            <div data-reveal>
+              <p class="num">{num()}</p>
+              <h2 class="headline">Quality & delivery</h2>
+            </div>
+            <ul class="list checks" data-reveal style="--d: 1">
+              {study.quality.map((q) => (
+                <li>
+                  <Icon name="check" />
+                  {q}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      {
+        study && study.retrospective.length > 0 && (
+          <section class="chapter">
+            <div data-reveal>
+              <p class="num">{num()}</p>
+              <h2 class="headline">What I would do differently</h2>
+            </div>
+            <ul class="list" data-reveal style="--d: 1">
+              {study.retrospective.map((r) => <li>{r}</li>)}
+            </ul>
+          </section>
+        )
+      }
+
+      {
+        study && study.next.length > 0 && (
+          <section class="chapter">
+            <div data-reveal>
+              <p class="num">{num()}</p>
+              <h2 class="headline">What is next</h2>
+            </div>
+            <ul class="list" data-reveal style="--d: 1">
+              {study.next.map((x) => <li>{x}</li>)}
+            </ul>
+          </section>
+        )
+      }
+    </div>
+  </article>
+</Base>
+
+<style>
+  .header {
+    display: grid;
+    gap: 16px;
+    justify-items: start;
+    padding-block: clamp(32px, 5vw, 56px) 48px;
+  }
+  .header > div:first-child {
+    margin-left: -12px;
+    margin-bottom: clamp(8px, 2vw, 24px);
+  }
+  .intro {
+    display: grid;
+    gap: 16px;
+    max-width: 760px;
+  }
+  .meta {
+    display: grid;
+    gap: 12px;
+  }
+  .meta p {
+    font-size: 0.875rem;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .body {
+    display: grid;
+    gap: clamp(56px, 8vw, 96px);
+    padding-bottom: clamp(64px, 9vw, 112px);
+  }
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 0;
+  }
+  .metrics .card {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: 4px;
+    padding: 20px;
+  }
+  .metrics dt {
+    font-size: 0.875rem;
+  }
+  .metrics dd {
+    margin: 0;
+  }
+  @media (min-width: 700px) {
+    .metrics {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .chapter {
+    display: grid;
+    gap: 28px;
+    max-width: 760px;
+  }
+  .chapter.wide {
+    max-width: none;
+  }
+  .num {
+    margin-bottom: 8px;
+    font: 500 0.75rem var(--font-mono);
+    color: var(--accent);
+  }
+  .chapter-intro {
+    max-width: 760px;
+    margin-top: 12px;
+  }
+  .prose {
+    display: grid;
+    gap: 16px;
+    font-size: 1.125rem;
+    color: var(--text-2);
+  }
+  .prose :global(code) {
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--surface-raised);
+    font: 500 0.9em var(--font-mono);
+  }
+
+  .list {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding-left: 22px;
+    font-size: 1.0625rem;
+    color: var(--text-2);
+  }
+  .list li::marker {
+    color: var(--text-muted);
+  }
+  .checks {
+    padding-left: 0;
+    list-style: none;
+  }
+  .checks li {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+  }
+  .checks :global(.icon) {
+    margin-top: 4px;
+    color: var(--accent);
+  }
+
+  .decisions {
+    display: grid;
+    gap: 20px;
+  }
+  @media (min-width: 1080px) {
+    .decisions {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  .decision {
+    display: grid;
+    gap: 6px;
+    align-content: start;
+  }
+  .muted-eyebrow {
+    color: var(--text-muted);
+  }
+  .decision .title {
+    margin: 4px 0 14px;
+  }
+  .label {
+    margin-top: 10px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .label.why {
+    margin-top: 0;
+    color: var(--accent);
+  }
+  .text {
+    color: var(--text-2);
+  }
+</style>

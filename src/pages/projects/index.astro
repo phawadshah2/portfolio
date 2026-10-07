@@ -1,0 +1,39 @@
+---
+import ProjectCard from '../../components/ProjectCard.astro';
+import Base from '../../layouts/Base.astro';
+import { getProjects } from '../../lib/content';
+
+const projects = await getProjects();
+---
+
+<Base title="Projects" description="Apps and case studies by Fawad Shah, with live demos where they run on the web.">
+  <section class="section">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Projects</p>
+        <h1 class="display-l">Everything I have built and written up</h1>
+        <p class="lead">
+          Personal apps and case studies. Projects with a live demo run right in the page.
+        </p>
+      </div>
+      <div class="list">
+        {projects.map((p, i) => <ProjectCard project={p} delay={i % 2} />)}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .lead {
+    max-width: 640px;
+  }
+  .list {
+    display: grid;
+    gap: 20px;
+  }
+  @media (min-width: 700px) {
+    .list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
