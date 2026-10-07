@@ -15,7 +15,10 @@ const { project, wide = false, delay = 0 } = Astro.props;
 const { data } = project;
 const href = url(projectPath(project));
 const metrics = wide ? data.metrics : data.metrics.slice(0, 2);
-const poster = data.cover ?? data.screenshots[0]?.src;
+// A wide `cover` fills the banner as is. Phone screenshots are portrait, so
+// they are shown as a row of phones instead of being cropped to a strip.
+const cover = data.cover;
+const phones = cover ? [] : data.screenshots.slice(0, wide ? 3 : 2);
 ---
 
 <article
@@ -24,9 +27,20 @@ const poster = data.cover ?? data.screenshots[0]?.src;
   style={`--d: ${delay}`}
 >
   {
-    poster && (
+    cover && (
       <div class="media">
-        <Image src={poster} alt="" width={wide ? 640 : 480} loading="lazy" />
+        <Image src={cover} alt="" width={wide ? 1100 : 640} loading="lazy" />
+      </div>
+    )
+  }
+  {
+    phones.length > 0 && (
+      <div class="media phones" aria-hidden="true">
+        {phones.map((shot, i) => (
+          <div class="phone" style={`--i: ${i}`}>
+            <Image src={shot.src} alt="" widths={[200, 400]} sizes="200px" loading="lazy" />
+          </div>
+        ))}
       </div>
     )
   }
@@ -91,8 +105,51 @@ const poster = data.cover ?? data.screenshots[0]?.src;
     object-fit: cover;
     transition: transform 500ms var(--ease-out);
   }
+  /* Phone row: screens rise out of the bottom edge of a tinted panel. */
+  .phones {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: clamp(12px, 3vw, 28px);
+    padding: 28px 24px 0;
+    background:
+      radial-gradient(80% 90% at 50% 100%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%),
+      var(--surface-raised);
+  }
+  .phone {
+    flex: 0 1 190px;
+    align-self: flex-end;
+    height: 100%;
+    overflow: hidden;
+    border: 5px solid #05070b;
+    border-bottom: 0;
+    border-radius: 24px 24px 0 0;
+    background: #05070b;
+    /* Middle phone sits a little higher, like a product banner. */
+    transform: translateY(calc((var(--i) - 1) * (var(--i) - 1) * 14px));
+    transition: transform 400ms var(--ease-out);
+  }
+  /* Always fill the frame; the bottom of the screen is cropped by the panel. */
+  .phones .phone :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
   @media (hover: hover) {
-    .project:hover .media :global(img) {
+    .project:hover .phone {
+      transform: translateY(calc((var(--i) - 1) * (var(--i) - 1) * 14px - 8px));
+    }
+    .project:hover .phone:nth-child(2) {
+      transition-delay: 40ms;
+    }
+    .project:hover .phone:nth-child(3) {
+      transition-delay: 80ms;
+    }
+  }
+
+  @media (hover: hover) {
+    .project:hover .media:not(.phones) :global(img) {
       transform: scale(1.03);
     }
   }

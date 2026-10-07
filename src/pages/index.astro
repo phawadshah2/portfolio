@@ -1,6 +1,7 @@
 ---
 import Button from '../components/Button.astro';
 import CopyEmail from '../components/CopyEmail.astro';
+import HeroShowcase from '../components/HeroShowcase.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import SectionHead from '../components/SectionHead.astro';
 import Base from '../layouts/Base.astro';
@@ -18,25 +19,26 @@ const lead = shown[0];
 <Base>
   <!-- Hero -->
   <section class="hero">
-    <div class="container">
-      <div class="hero-inner">
-      <p class="badge" data-reveal style="--d: 0; --reveal-offset: 16px">
-        <span class="dot" aria-hidden="true"></span>
-        {profile.availability} · {profile.location}
-      </p>
-      <p class="eyebrow" data-reveal style="--d: 1; --reveal-offset: 16px">
-        {profile.name} — {profile.role}
-      </p>
-      <h1 class="display-xl" data-reveal style="--d: 2; --reveal-offset: 16px">
-        {profile.headline}
-      </h1>
-      <p class="lead" data-reveal style="--d: 3; --reveal-offset: 16px">{profile.intro}</p>
-      <div class="cta" data-reveal style="--d: 4; --reveal-offset: 16px">
-        {lead && <Button href={projectPath(lead)} icon="arrow-right">Read the case study</Button>}
-        <Button href={profile.cv} variant="secondary" icon="download" download>Download CV</Button>
-        <Button href="#contact" variant="text">Get in touch</Button>
+    <div class="container hero-grid">
+      <div class="hero-text">
+        <p class="badge" data-reveal style="--d: 0; --reveal-offset: 16px">
+          <span class="dot" aria-hidden="true"></span>
+          {profile.availability} · {profile.location}
+        </p>
+        <p class="eyebrow" data-reveal style="--d: 1; --reveal-offset: 16px">
+          {profile.name} — {profile.role}
+        </p>
+        <h1 class="hero-title" data-reveal style="--d: 2; --reveal-offset: 16px">
+          {profile.headline}
+        </h1>
+        <p class="lead" data-reveal style="--d: 3; --reveal-offset: 16px">{profile.intro}</p>
+        <div class="cta" data-reveal style="--d: 4; --reveal-offset: 16px">
+          {lead && <Button href={projectPath(lead)} icon="arrow-right">Read the case study</Button>}
+          <Button href={profile.cv} variant="secondary" icon="download" download>Download CV</Button>
+          <Button href="#contact" variant="text">Get in touch</Button>
+        </div>
       </div>
-      </div>
+      <HeroShowcase shots={profile.showcase} />
     </div>
   </section>
 
@@ -163,12 +165,31 @@ const lead = shown[0];
       transparent 70%
     );
   }
-  .hero-inner {
+  .hero-grid {
+    display: grid;
+    gap: clamp(40px, 6vw, 64px);
+    align-items: center;
+    padding-block: clamp(48px, 9vw, 112px) clamp(48px, 7vw, 96px);
+  }
+  .hero-text {
     display: grid;
     gap: 20px;
     justify-items: start;
-    max-width: 860px;
-    padding-block: clamp(56px, 10vw, 128px) clamp(56px, 8vw, 104px);
+    max-width: 760px;
+  }
+  .hero-title {
+    font-size: clamp(2.5rem, 5.5vw + 0.4rem, 4rem);
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+  }
+  @media (min-width: 1080px) {
+    .hero-grid {
+      /* Text a touch wider than the showcase; the cards overhang the gap. */
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    }
+    .hero-title {
+      font-size: clamp(2.75rem, 3.6vw + 0.5rem, 4rem);
+    }
   }
   .badge {
     display: inline-flex;

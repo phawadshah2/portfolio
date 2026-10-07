@@ -15,20 +15,34 @@ const stat = z.object({
 
 const profile = defineCollection({
   loader: file('src/content/profile.yaml'),
-  schema: z.object({
-    name: z.string(),
-    role: z.string(),
-    headline: z.string(),
-    intro: z.string(),
-    about: z.array(z.string()).min(1),
-    location: z.string(),
-    availability: z.string(),
-    email: z.email(),
-    linkedin: z.url(),
-    github: z.url(),
-    cv: z.string(),
-    stats: z.array(stat),
-  }),
+  schema: ({ image }) =>
+    z.object({
+      name: z.string(),
+      role: z.string(),
+      headline: z.string(),
+      intro: z.string(),
+      about: z.array(z.string()).min(1),
+      location: z.string(),
+      availability: z.string(),
+      email: z.email(),
+      linkedin: z.url(),
+      github: z.url(),
+      cv: z.string(),
+      stats: z.array(stat),
+      /** App Store-style cards in the hero (3–4 look best). */
+      showcase: z
+        .array(
+          z.object({
+            image: image(),
+            caption: z.string(),
+            /** Project slug the card links to. */
+            project: z.string(),
+            alt: z.string(),
+          }),
+        )
+        .max(4)
+        .default([]),
+    }),
 });
 
 const experience = defineCollection({
