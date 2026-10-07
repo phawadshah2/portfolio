@@ -1,45 +1,46 @@
 /* ---------------------------------------------------------------------------
-   Fonts: Latin-subset WOFF2, self-hosted (no third-party requests).
+   Fonts: Latin-subset WOFF2, self-hosted (no third-party requests). Relative
+   URLs let Vite fingerprint them and apply the deploy base path.
    --------------------------------------------------------------------------- */
 @font-face {
   font-family: 'Inter';
-  src: url('/fonts/Inter-Regular.woff2') format('woff2');
+  src: url('../assets/fonts/Inter-Regular.woff2') format('woff2');
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
   font-family: 'Inter';
-  src: url('/fonts/Inter-Medium.woff2') format('woff2');
+  src: url('../assets/fonts/Inter-Medium.woff2') format('woff2');
   font-weight: 500;
   font-display: swap;
 }
 @font-face {
   font-family: 'Inter';
-  src: url('/fonts/Inter-SemiBold.woff2') format('woff2');
+  src: url('../assets/fonts/Inter-SemiBold.woff2') format('woff2');
   font-weight: 600;
   font-display: swap;
 }
 @font-face {
   font-family: 'Inter';
-  src: url('/fonts/Inter-Bold.woff2') format('woff2');
+  src: url('../assets/fonts/Inter-Bold.woff2') format('woff2');
   font-weight: 700;
   font-display: swap;
 }
 @font-face {
   font-family: 'Space Grotesk';
-  src: url('/fonts/SpaceGrotesk-SemiBold.woff2') format('woff2');
+  src: url('../assets/fonts/SpaceGrotesk-SemiBold.woff2') format('woff2');
   font-weight: 600;
   font-display: swap;
 }
 @font-face {
   font-family: 'Space Grotesk';
-  src: url('/fonts/SpaceGrotesk-Bold.woff2') format('woff2');
+  src: url('../assets/fonts/SpaceGrotesk-Bold.woff2') format('woff2');
   font-weight: 700;
   font-display: swap;
 }
 @font-face {
   font-family: 'JetBrains Mono';
-  src: url('/fonts/JetBrainsMono-Medium.woff2') format('woff2');
+  src: url('../assets/fonts/JetBrainsMono-Medium.woff2') format('woff2');
   font-weight: 500;
   font-display: swap;
 }

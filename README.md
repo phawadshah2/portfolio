@@ -50,9 +50,7 @@ The Markdown body is "The problem" section of the case study.
 3. In the project's Markdown: `demo: { url: /demos/<slug>/ }`
 
 The project page shows a phone frame with a **Run the live app** button. The
-build is only downloaded when a visitor clicks it. Firebase serves `/demos/**`
-with cross-origin isolation headers so the multithreaded renderer works when a
-demo is opened full screen.
+build is only downloaded when a visitor clicks it.
 
 ## Develop
 
@@ -82,12 +80,19 @@ npm run preview    # serve dist/ locally
 
 ## Deploy
 
-CI (`.github/workflows/ci.yml`) runs `npm run check` and `npm run build` on
-every PR. The `deploy` job publishes `main` to Firebase Hosting once these are
-set in the GitHub repo (Settings → Secrets and variables → Actions):
+Hosted on **GitHub Pages** at https://phawadshah2.github.io/portfolio.
 
-1. Variable `FIREBASE_PROJECT_ID`: the Firebase project id.
-2. Secret `FIREBASE_SERVICE_ACCOUNT`: JSON key of a service account with the
-   *Firebase Hosting Admin* role.
-3. Variable `SITE_URL` (optional until there is a domain), e.g.
-   `https://fawadshah.dev`: enables absolute link-preview URLs and the sitemap.
+CI (`.github/workflows/ci.yml`) runs `npm run check` and `npm run build` on
+every PR. On `main` it also builds for Pages and deploys. The workflow reads
+the Pages URL, so the sub-path (`/portfolio`) is applied automatically, and
+moving to a custom domain later needs no code change.
+
+One-time setup: repo **Settings → Pages → Build and deployment → Source:
+GitHub Actions**.
+
+Internal links must go through `url()` from `src/lib/paths.ts` (the `Button`
+component already does) so they keep working under the sub-path.
+
+**Live demos on Pages:** GitHub Pages cannot send the cross-origin isolation
+headers that Flutter's multithreaded Wasm renderer uses, so demos run on the
+single-threaded renderer. They work; they are just slightly slower to start.

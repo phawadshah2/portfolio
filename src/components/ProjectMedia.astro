@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
 import type { Project } from '../lib/content';
+import { url } from '../lib/paths';
 
 interface Props {
   project: Project;
@@ -19,7 +20,7 @@ const hasMedia = Boolean(data.demo || data.video || data.screenshots.length);
         <div class="demo" data-reveal>
           {/* Nothing heavy loads until the visitor asks: a Flutter web build
               is several MB, so the iframe is created on click. */}
-          <div class="phone" data-demo data-src={data.demo.url}>
+          <div class="phone" data-demo data-src={url(data.demo.url)}>
             {poster && <Image src={poster} alt="" width={360} class="poster" />}
             <button type="button" class="run" data-demo-run>
               <span class="run-icon">
@@ -35,7 +36,7 @@ const hasMedia = Boolean(data.demo || data.video || data.screenshots.length);
               {data.demo.note ??
                 'This is the real Flutter app compiled for the web, running inside the page. Data stays in your browser.'}
             </p>
-            <a href={data.demo.url} target="_blank" rel="noopener noreferrer" class="full">
+            <a href={url(data.demo.url)} target="_blank" rel="noopener noreferrer" class="full">
               <Icon name="expand" /> Open full screen
               <span class="visually-hidden">(opens in a new tab)</span>
             </a>
@@ -49,7 +50,7 @@ const hasMedia = Boolean(data.demo || data.video || data.screenshots.length);
           controls
           preload="none"
           playsinline
-          src={data.video.src}
+          src={url(data.video.src)}
           poster={data.video.poster?.src}
           data-reveal
         />

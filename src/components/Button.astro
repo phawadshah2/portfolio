@@ -1,4 +1,5 @@
 ---
+import { url } from '../lib/paths';
 import Icon, { type IconName } from './Icon.astro';
 
 interface Props {
@@ -34,7 +35,7 @@ const nudge: Partial<Record<IconName, string>> = {
 ---
 
 <a
-  href={href}
+  href={url(href)}
   class:list={['btn', `btn-${variant}`, className]}
   style={icon && nudge[icon] ? `--nudge: ${nudge[icon]}` : undefined}
   target={external ? '_blank' : undefined}

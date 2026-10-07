@@ -25,6 +25,7 @@ export async function getProjects() {
   );
 }
 
+/** Site-root path; pass it through `url()` (Button does this itself). */
 export const projectPath = (project: Project) => `/projects/${project.id}`;
 
 export const platformLabel: Record<string, string> = {
