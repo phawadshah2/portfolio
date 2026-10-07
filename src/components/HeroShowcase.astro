@@ -1,0 +1,252 @@
+---
+import { Image } from 'astro:assets';
+import { url } from '../lib/paths';
+
+type Shot = {
+  image: ImageMetadata;
+  caption: string;
+  project: string;
+  alt: string;
+};
+
+interface Props {
+  shots: Shot[];
+}
+
+const { shots } = Astro.props;
+
+// App Store-style card tints, one per card.
+const tints = ['#54b4ff', '#4cd39a', '#a78bfa', '#f5a65b'];
+
+// Fan layout: each card's distance from the centre of the row. The middle
+// cards sit highest and on top; the outer ones drop and rotate away.
+const centre = (shots.length - 1) / 2;
+const cards = shots.map((shot, i) => {
+  const offset = i - centre;
+  return {
+    ...shot,
+    offset,
+    distance: Math.abs(offset),
+    z: 10 - Math.round(Math.abs(offset) * 2),
+    tint: tints[i % tints.length],
+    // Entrance order: centre cards first, then outwards.
+    delay: Math.round(Math.abs(offset) * 2),
+  };
+});
+---
+
+{
+  cards.length > 0 && (
+    <div class="showcase">
+    <div class="fan" data-showcase style={`--n: ${cards.length}`}>
+      {cards.map((card, i) => (
+        <a
+          class="slot"
+          href={url(`/projects/${card.project}`)}
+          style={`--o: ${card.offset}; --ao: ${card.distance}; --i: ${i}; --c: ${card.tint}; z-index: ${card.z}`}
+        >
+          <div class="promo" data-reveal style={`--d: ${card.delay + 2}; --reveal-offset: 40px`}>
+            <div class="float">
+              <p class="caption">{card.caption}</p>
+              <div class="screen">
+                <Image
+                  src={card.image}
+                  alt={card.alt}
+                  widths={[220, 440]}
+                  sizes="(min-width: 1080px) 210px, 32vw"
+                  loading="eager"
+                  fetchpriority={card.distance < 1 ? 'high' : 'auto'}
+                />
+              </div>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+    </div>
+  )
+}
+
+<script>
+  // Cards tilt gently towards the pointer. Desktop mice only, never with
+  // reduced motion; one CSS variable update per frame at most.
+  const showcase = document.querySelector<HTMLElement>('[data-showcase]');
+  const canTilt =
+    matchMedia('(hover: hover) and (pointer: fine)').matches &&
+    !matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (showcase && canTilt) {
+    let frame = 0;
+    let x = 0;
+    let y = 0;
+    const apply = () => {
+      frame = 0;
+      showcase.style.setProperty('--mx', x.toFixed(3));
+      showcase.style.setProperty('--my', y.toFixed(3));
+    };
+    const queue = () => {
+      if (!frame) frame = requestAnimationFrame(apply);
+    };
+    showcase.addEventListener('pointermove', (event) => {
+      const rect = showcase.getBoundingClientRect();
+      x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
+      queue();
+    });
+    showcase.addEventListener('pointerleave', () => {
+      x = 0;
+      y = 0;
+      queue();
+    });
+  }
+</script>
+
+<style>
+  /* The fan sizes itself from the width of its own column (container
+     query units), so it always fits: no overflow at any screen size. */
+  .showcase {
+    container-type: inline-size;
+  }
+  .fan {
+    /* Horizontal step between cards, as a fraction of a card's width.
+       Below 1 the cards overlap; captions stay readable above ~0.78. */
+    --spread: 0.8;
+    /* Card width = column width / (1 card + (n - 1) steps), capped. */
+    --w: min(200px, calc(100cqw / (1 + (var(--n) - 1) * var(--spread)) - 6px));
+    --mx: 0;
+    --my: 0;
+    position: relative;
+    height: calc(var(--w) * 2.15 + 70px);
+    perspective: 1200px;
+  }
+
+  /* Fan position + pointer tilt + hover lift, all in one compositor-only
+     transform. */
+  .slot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--w);
+    transform:
+      translate(-50%, -50%)
+      translateX(calc(var(--o) * var(--w) * var(--spread)))
+      translateY(calc(var(--ao) * 26px))
+      rotateY(calc(var(--mx) * 7deg))
+      rotateX(calc(var(--my) * -7deg))
+      rotate(calc(var(--o) * 4deg));
+    transition: transform 450ms var(--ease-out);
+    border-radius: 30px;
+  }
+  @media (hover: hover) {
+    .slot:hover {
+      z-index: 20 !important;
+      transform:
+        translate(-50%, -50%)
+        translateX(calc(var(--o) * var(--w) * var(--spread)))
+        translateY(calc(var(--ao) * 26px - 16px))
+        rotateY(calc(var(--mx) * 7deg))
+        rotateX(calc(var(--my) * -7deg))
+        rotate(0deg)
+        scale(1.06);
+    }
+  }
+  .slot:focus-visible {
+    outline-offset: 6px;
+    border-radius: 30px;
+  }
+
+  .promo {
+    border-radius: 30px;
+  }
+
+  /* Idle float: each card on its own rhythm so the group never moves in
+     lockstep. */
+  .float {
+    display: grid;
+    gap: 12px;
+    padding: 16px 12px 12px;
+    border: 1px solid color-mix(in srgb, var(--c) 35%, var(--border));
+    border-radius: 30px;
+    background:
+      radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--c) 30%, transparent), transparent 70%),
+      var(--surface);
+    box-shadow:
+      0 30px 60px -30px rgb(0 0 0 / 0.45),
+      0 0 0 1px rgb(255 255 255 / 0.02) inset;
+    animation: float calc(6s + var(--i) * 0.8s) ease-in-out infinite alternate;
+    animation-delay: calc(var(--i) * -1.4s);
+  }
+  @keyframes float {
+    from {
+      transform: translateY(-5px);
+    }
+    to {
+      transform: translateY(5px);
+    }
+  }
+
+  .caption {
+    min-height: 2.5em;
+    padding-inline: 4px;
+    font: 700 clamp(0.72rem, 0.55rem + 0.45vw, 0.95rem) / 1.25 var(--font-display);
+    letter-spacing: -0.01em;
+    text-align: center;
+    text-wrap: balance;
+    color: var(--text);
+  }
+
+  /* Phone bezel around the real screenshot. */
+  .screen {
+    overflow: hidden;
+    aspect-ratio: 9 / 17;
+    border: 4px solid #05070b;
+    border-radius: 22px;
+    background: #05070b;
+  }
+  .screen :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  /* Phones: four fanned cards would be ~90px wide. Use the App Store's own
+     pattern instead: a swipeable row with the next card peeking in. */
+  @media (max-width: 699px) {
+    .fan {
+      --w: min(62vw, 230px);
+      display: flex;
+      gap: 14px;
+      height: auto;
+      /* Bleed to the screen edges so cards scroll under the gutter. */
+      margin-inline: calc(-1 * var(--gutter));
+      padding: 8px var(--gutter) 24px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--gutter);
+      scrollbar-width: none;
+      perspective: none;
+    }
+    .fan::-webkit-scrollbar {
+      display: none;
+    }
+    .slot {
+      position: relative;
+      left: auto;
+      top: auto;
+      flex: 0 0 var(--w);
+      transform: none;
+      scroll-snap-align: start;
+      z-index: auto !important;
+    }
+    .caption {
+      font-size: 1rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .float {
+      animation: none;
+    }
+  }
+</style>

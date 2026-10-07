@@ -32,6 +32,25 @@
   github: https://github.com/phawadshah2
   # Served from public/. Contains no phone number on purpose.
   cv: /Fawad-Shah-CV.pdf
+  # Hero cards, App Store style. Real screenshots only; paths are relative to
+  # this file. Swap them for other apps any time.
+  showcase:
+    - image: ./projects/employee-book/list.png
+      caption: Offline-first directory
+      project: employee-book
+      alt: employee_book list of employees with names, usernames and emails
+    - image: ./projects/employee-book/swipe.png
+      caption: Swipe to delete
+      project: employee-book
+      alt: Swiping an employee row reveals a red Delete action
+    - image: ./projects/employee-book/edit.png
+      caption: Edit in place
+      project: employee-book
+      alt: Edit Employee form pre-filled with an employee's details
+    - image: ./projects/employee-book/validation.png
+      caption: Validation in the domain
+      project: employee-book
+      alt: Add Employee form showing a required-field error on every input
   stats:
     - { value: '5+', label: years shipping Flutter }
     - { value: '20K+', label: active users on my current app }

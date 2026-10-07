@@ -12,6 +12,15 @@ featured: true
 order: 1
 links:
   repo: https://github.com/phawadshah2/employee_book
+screenshots:
+  - src: ./employee-book/list.png
+    alt: List of employees with names, usernames and emails
+  - src: ./employee-book/swipe.png
+    alt: Swiping a row reveals the Delete action
+  - src: ./employee-book/edit.png
+    alt: Edit Employee form pre-filled with an employee's details
+  - src: ./employee-book/validation.png
+    alt: Add Employee form showing required-field errors
 metrics:
   - { value: '70', label: automated tests }
   - { value: '18', label: PRs merged through CI }
