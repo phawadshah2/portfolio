@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:portfolio/content/models.dart';
+import 'package:portfolio/core/motion/count_up.dart';
 import 'package:portfolio/core/theme/theme_context.dart';
 import 'package:portfolio/core/widgets/surface_card.dart';
 
@@ -15,7 +16,7 @@ class StatTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          CountUp(
             stat.value,
             style: context.text.headlineMedium?.copyWith(
               color: context.palette.accent,

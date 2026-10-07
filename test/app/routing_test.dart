@@ -37,6 +37,10 @@ void main() {
       await tester.pumpApp();
       final button = find.text('Read the case study').last;
       await tester.ensureVisible(button);
+      // Scrolling triggers the card's reveal, which moves it; settle and
+      // re-align before tapping.
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(button);
       await tester.pumpAndSettle();
       await tester.tap(button);
       await tester.pumpAndSettle();

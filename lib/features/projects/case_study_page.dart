@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:portfolio/content/models.dart';
 import 'package:portfolio/core/layout/breakpoints.dart';
 import 'package:portfolio/core/links.dart';
+import 'package:portfolio/core/motion/motion.dart';
+import 'package:portfolio/core/motion/reveal.dart';
 import 'package:portfolio/core/theme/theme_context.dart';
 import 'package:portfolio/core/widgets/action_button.dart';
 import 'package:portfolio/core/widgets/page_section.dart';
@@ -31,12 +33,15 @@ class CaseStudyPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ResponsiveGrid(
-                mobile: 2,
-                tablet: 4,
-                desktop: 4,
-                spacing: 16,
-                children: [for (final m in study.metrics) StatTile(stat: m)],
+              Reveal(
+                delay: Motion.staggerAt(4),
+                child: ResponsiveGrid(
+                  mobile: 2,
+                  tablet: 4,
+                  desktop: 4,
+                  spacing: 16,
+                  children: [for (final m in study.metrics) StatTile(stat: m)],
+                ),
               ),
               gap,
               _Chapter(
@@ -73,7 +78,11 @@ class CaseStudyPage extends StatelessWidget {
                 child: ResponsiveGrid(
                   desktop: 2,
                   children: [
-                    for (final d in study.decisions) DecisionCard(decision: d),
+                    for (final (i, d) in study.decisions.indexed)
+                      Reveal(
+                        delay: Motion.staggerAt(i % 2),
+                        child: DecisionCard(decision: d),
+                      ),
                   ],
                 ),
               ),
@@ -116,11 +125,12 @@ class _Header extends StatelessWidget {
     return ContentWidth(
       child: Padding(
         padding: EdgeInsets.only(top: mobile ? 32 : 56, bottom: 48),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: RevealColumn(
           children: [
             ActionButton(
-              label: '← All work',
+              label: 'All work',
+              icon: Icons.arrow_back_rounded,
+              leadingIcon: true,
               style: ActionButtonStyle.text,
               onPressed: () => context.go('/?section=work'),
             ),
@@ -203,7 +213,7 @@ class _Chapter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
-    return Column(
+    final heading = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -227,13 +237,24 @@ class _Chapter extends StatelessWidget {
             ),
           ),
         ],
+      ],
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Reveal(child: heading),
         const SizedBox(height: 28),
+        // Wide bodies (diagram, card grids) stagger their own items.
         if (wide)
           child
         else
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 760),
-            child: child,
+          Reveal(
+            delay: Motion.stagger,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 760),
+              child: child,
+            ),
           ),
       ],
     );

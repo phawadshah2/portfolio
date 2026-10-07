@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:portfolio/content/models.dart';
 import 'package:portfolio/core/layout/breakpoints.dart';
 import 'package:portfolio/core/links.dart';
+import 'package:portfolio/core/motion/count_up.dart';
+import 'package:portfolio/core/motion/reveal.dart';
 import 'package:portfolio/core/theme/theme_context.dart';
 import 'package:portfolio/core/widgets/action_button.dart';
 import 'package:portfolio/core/widgets/page_section.dart';
@@ -24,7 +26,7 @@ class WorkSection extends StatelessWidget {
           for (final project in projects)
             Padding(
               padding: const EdgeInsets.only(bottom: 20),
-              child: ProjectCard(project: project),
+              child: Reveal(child: ProjectCard(project: project)),
             ),
         ],
       ),
@@ -95,12 +97,14 @@ class ProjectCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 20),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
+              // Not baseline-aligned: a parent that reads a child's baseline
+              // must re-lay out whenever the child does, which would let the
+              // count-up's per-frame layout escape to the whole page.
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
                   width: 64,
-                  child: Text(
+                  child: CountUp(
                     metric.value,
                     style: context.text.headlineMedium?.copyWith(
                       color: palette.accent,
@@ -122,6 +126,9 @@ class ProjectCard extends StatelessWidget {
     );
 
     return SurfaceCard(
+      // Whole card is a mouse shortcut to the case study; keyboard and screen
+      // reader users get the explicit button inside.
+      onTap: () => context.go(project.path),
       padding: EdgeInsets.all(mobile ? 24 : 40),
       child: context.screenSize == ScreenSize.desktop
           ? Row(

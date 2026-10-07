@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:portfolio/core/layout/breakpoints.dart';
+import 'package:portfolio/core/motion/reveal.dart';
 import 'package:portfolio/core/theme/theme_context.dart';
 
 /// Centers content in the readable column and applies the page gutter.
@@ -47,15 +48,22 @@ class PageSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SectionLabel(label),
-            const SizedBox(height: 12),
-            Semantics(
-              header: true,
-              child: Text(
-                title,
-                style: context.isMobile
-                    ? context.text.headlineMedium
-                    : context.text.displayMedium,
+            Reveal(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SectionLabel(label),
+                  const SizedBox(height: 12),
+                  Semantics(
+                    header: true,
+                    child: Text(
+                      title,
+                      style: context.isMobile
+                          ? context.text.headlineMedium
+                          : context.text.displayMedium,
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(height: context.isMobile ? 32 : 48),

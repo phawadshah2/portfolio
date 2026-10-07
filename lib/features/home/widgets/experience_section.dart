@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:portfolio/content/models.dart';
 import 'package:portfolio/core/layout/breakpoints.dart';
+import 'package:portfolio/core/motion/reveal.dart';
 import 'package:portfolio/core/theme/theme_context.dart';
 import 'package:portfolio/core/widgets/page_section.dart';
 import 'package:portfolio/core/widgets/tag.dart';
@@ -18,9 +19,11 @@ class ExperienceSection extends StatelessWidget {
       child: Column(
         children: [
           for (final (index, item) in experience.indexed)
-            _ExperienceEntry(
-              item: item,
-              isLast: index == experience.length - 1,
+            Reveal(
+              child: _ExperienceEntry(
+                item: item,
+                isLast: index == experience.length - 1,
+              ),
             ),
         ],
       ),

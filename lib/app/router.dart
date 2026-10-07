@@ -1,5 +1,7 @@
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portfolio/content/portfolio_content.dart';
+import 'package:portfolio/core/motion/motion.dart';
 import 'package:portfolio/core/widgets/site_nav.dart';
 import 'package:portfolio/features/home/home_page.dart';
 import 'package:portfolio/features/not_found/not_found_page.dart';
@@ -12,24 +14,45 @@ GoRouter createRouter({String initialLocation = '/'}) {
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final name = state.uri.queryParameters['section'];
           final section = HomeSection.values
               .where((s) => s.name == name)
               .firstOrNull;
-          return HomePage(initialSection: section);
+          return _fadePage(state, HomePage(initialSection: section));
         },
       ),
       GoRoute(
         path: '/projects/:slug',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final project = portfolioContent.projectBySlug(
             state.pathParameters['slug']!,
           );
-          if (project == null) return const NotFoundPage();
-          return CaseStudyPage(project: project);
+          return _fadePage(
+            state,
+            project == null
+                ? const NotFoundPage()
+                : CaseStudyPage(project: project),
+          );
         },
       ),
     ],
+  );
+}
+
+/// Short cross-fade between pages. Platform defaults (zoom or slide) feel
+/// app-like and heavy on a website.
+CustomTransitionPage<void> _fadePage(GoRouterState state, Widget child) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    transitionDuration: Motion.page,
+    reverseTransitionDuration: Motion.page,
+    child: child,
+    transitionsBuilder: (context, animation, _, child) => context.reduceMotion
+        ? child
+        : FadeTransition(
+            opacity: animation.drive(CurveTween(curve: Motion.enter)),
+            child: child,
+          ),
   );
 }

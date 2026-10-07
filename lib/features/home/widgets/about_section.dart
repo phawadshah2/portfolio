@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:portfolio/content/models.dart';
 import 'package:portfolio/core/layout/breakpoints.dart';
+import 'package:portfolio/core/motion/motion.dart';
+import 'package:portfolio/core/motion/reveal.dart';
 import 'package:portfolio/core/theme/theme_context.dart';
 import 'package:portfolio/core/widgets/page_section.dart';
 import 'package:portfolio/core/widgets/responsive_grid.dart';
@@ -14,28 +16,33 @@ class AboutSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final paragraphs = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (final paragraph in profile.about)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 20),
-            child: Text(
-              paragraph,
-              style: context.text.bodyLarge?.copyWith(
-                color: context.palette.textSecondary,
+    final paragraphs = Reveal(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final paragraph in profile.about)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Text(
+                paragraph,
+                style: context.text.bodyLarge?.copyWith(
+                  color: context.palette.textSecondary,
+                ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
 
-    final statGrid = ResponsiveGrid(
-      mobile: 2,
-      tablet: 2,
-      desktop: 2,
-      spacing: 16,
-      children: [for (final stat in stats) StatTile(stat: stat)],
+    final statGrid = Reveal(
+      delay: Motion.stagger * 2,
+      child: ResponsiveGrid(
+        mobile: 2,
+        tablet: 2,
+        desktop: 2,
+        spacing: 16,
+        children: [for (final stat in stats) StatTile(stat: stat)],
+      ),
     );
 
     return PageSection(

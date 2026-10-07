@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:portfolio/core/motion/hover_builder.dart';
+import 'package:portfolio/core/motion/motion.dart';
 import 'package:portfolio/core/theme/theme_context.dart';
 
-/// Bordered card. When [onTap] is set it gets a hover lift and a pointer
-/// cursor, and is announced as a button to screen readers.
-class SurfaceCard extends StatefulWidget {
+/// Bordered card.
+///
+/// On hover every card tints its border. When [onTap] is set it also lifts,
+/// shows a pointer cursor, and is announced as a button to screen readers.
+class SurfaceCard extends StatelessWidget {
   const SurfaceCard({
     required this.child,
     this.onTap,
@@ -18,44 +22,54 @@ class SurfaceCard extends StatefulWidget {
   final String? semanticLabel;
 
   @override
-  State<SurfaceCard> createState() => _SurfaceCardState();
-}
-
-class _SurfaceCardState extends State<SurfaceCard> {
-  bool _hovered = false;
-
-  @override
   Widget build(BuildContext context) {
     final palette = context.palette;
-    final interactive = widget.onTap != null;
-    final highlighted = interactive && _hovered;
+    final interactive = onTap != null;
 
-    final card = AnimatedContainer(
-      duration: const Duration(milliseconds: 180),
-      curve: Curves.easeOut,
-      transform: Matrix4.translationValues(0, highlighted ? -3 : 0, 0),
-      padding: widget.padding,
-      decoration: BoxDecoration(
-        color: palette.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: highlighted ? palette.accent : palette.border,
+    final card = HoverBuilder(
+      cursor: interactive ? SystemMouseCursors.click : MouseCursor.defer,
+      // The content gets its own layer, so hover frames repaint only the
+      // border and background, never the text inside.
+      child: Padding(
+        padding: padding,
+        child: RepaintBoundary(child: child),
+      ),
+      builder: (context, hovered, content) => TweenAnimationBuilder<double>(
+        // A fixed 4px lift, whatever the card's height.
+        tween: Tween(end: interactive && hovered ? -4 : 0),
+        duration: Motion.hover,
+        curve: Motion.enter,
+        builder: (context, dy, child) =>
+            Transform.translate(offset: Offset(0, dy), child: child),
+        child: AnimatedContainer(
+          duration: Motion.hover,
+          curve: Motion.enter,
+          decoration: BoxDecoration(
+            color: palette.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: switch ((hovered, interactive)) {
+                (true, true) => palette.accent,
+                (true, false) => palette.textMuted.withValues(alpha: 0.5),
+                _ => palette.border,
+              },
+            ),
+          ),
+          child: content,
         ),
       ),
-      child: widget.child,
     );
 
     if (!interactive) return card;
 
-    return Semantics(
-      button: true,
-      label: widget.semanticLabel,
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        onEnter: (_) => setState(() => _hovered = true),
-        onExit: (_) => setState(() => _hovered = false),
-        child: GestureDetector(onTap: widget.onTap, child: card),
-      ),
+    final tappable = GestureDetector(
+      onTap: onTap,
+      // Without a label the tap is a mouse shortcut for a button inside the
+      // card, so assistive tech should not see a second, nameless button.
+      excludeFromSemantics: semanticLabel == null,
+      child: card,
     );
+    if (semanticLabel == null) return tappable;
+    return Semantics(button: true, label: semanticLabel, child: tappable);
   }
 }
