@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:portfolio/content/models.dart';
 import 'package:portfolio/core/layout/breakpoints.dart';
 import 'package:portfolio/core/links.dart';
+import 'package:portfolio/core/motion/reveal.dart';
 import 'package:portfolio/core/theme/theme_context.dart';
 import 'package:portfolio/core/widgets/action_button.dart';
 import 'package:portfolio/core/widgets/page_section.dart';
@@ -40,8 +41,7 @@ class HeroSection extends StatelessWidget {
           ),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 820),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: RevealColumn(
               children: [
                 _AvailabilityBadge(
                   text: '${profile.availability} · ${profile.location}',

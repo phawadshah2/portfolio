@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:portfolio/content/models.dart';
 import 'package:portfolio/core/layout/breakpoints.dart';
+import 'package:portfolio/core/motion/motion.dart';
+import 'package:portfolio/core/motion/reveal.dart';
 import 'package:portfolio/core/theme/theme_context.dart';
 
 /// Layered architecture with the dependency direction drawn explicitly.
@@ -20,7 +22,11 @@ class ArchitectureDiagram extends StatelessWidget {
 
     final boxes = [
       for (final (i, layer) in layers.indexed)
-        _LayerBox(layer: layer, emphasised: i == 1),
+        Reveal(
+          // Domain last: the eye lands on the layer everything points at.
+          delay: Motion.staggerAt(const [0, 2, 1][i] * 2),
+          child: _LayerBox(layer: layer, emphasised: i == 1),
+        ),
     ];
 
     if (horizontal) {

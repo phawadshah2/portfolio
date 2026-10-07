@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:portfolio/core/layout/breakpoints.dart';
+import 'package:portfolio/core/motion/hover_builder.dart';
+import 'package:portfolio/core/motion/motion.dart';
 import 'package:portfolio/core/theme/theme_context.dart';
 import 'package:portfolio/core/theme/theme_cubit.dart';
 import 'package:portfolio/core/widgets/page_section.dart';
@@ -48,19 +50,67 @@ class SiteNav extends StatelessWidget {
                 _MobileMenu(onSection: onSection)
               else
                 for (final section in HomeSection.values)
-                  TextButton(
+                  _NavLink(
+                    label: section.label,
                     onPressed: () => onSection(section),
-                    style: TextButton.styleFrom(
-                      foregroundColor: palette.textSecondary,
-                      textStyle: context.text.labelLarge,
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
-                    ),
-                    child: Text(section.label),
                   ),
               const SizedBox(width: 4),
               const ThemeToggle(),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NavLink extends StatelessWidget {
+  const _NavLink({required this.label, required this.onPressed});
+
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    return HoverBuilder(
+      builder: (context, hovered, _) => TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          foregroundColor: hovered
+              ? palette.textPrimary
+              : palette.textSecondary,
+          overlayColor: Colors.transparent,
+          textStyle: context.text.labelLarge,
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          minimumSize: const Size(0, 40),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        // The label sizes the Stack; the underline is positioned against it,
+        // so it always matches the text width.
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Text(label),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: -5,
+              // Grows from the left. Scaling is paint-only: no layout runs
+              // while it animates.
+              child: TweenAnimationBuilder<double>(
+                tween: Tween(end: hovered ? 1 : 0),
+                duration: Motion.hover,
+                curve: Motion.enter,
+                builder: (context, scale, child) => Transform(
+                  alignment: Alignment.centerLeft,
+                  transform: Matrix4.diagonal3Values(scale, 1, 1),
+                  child: child,
+                ),
+                child: Container(height: 1.5, color: palette.accent),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -80,25 +130,30 @@ class _Logo extends StatelessWidget {
       link: true,
       label: '$name, home',
       excludeSemantics: true,
-      child: MouseRegion(
+      child: HoverBuilder(
         cursor: SystemMouseCursors.click,
-        child: GestureDetector(
+        builder: (context, hovered, _) => GestureDetector(
           onTap: onTap,
           child: Row(
             children: [
-              Container(
-                width: 32,
-                height: 32,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: palette.accent,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  'FS',
-                  style: context.text.labelLarge?.copyWith(
-                    color: palette.background,
-                    fontWeight: FontWeight.w700,
+              AnimatedScale(
+                scale: hovered ? 1.08 : 1,
+                duration: Motion.hover,
+                curve: Motion.enter,
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: palette.accent,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'FS',
+                    style: context.text.labelLarge?.copyWith(
+                      color: palette.background,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
@@ -142,7 +197,19 @@ class ThemeToggle extends StatelessWidget {
     return IconButton(
       tooltip: isDark ? 'Switch to light theme' : 'Switch to dark theme',
       color: context.palette.textSecondary,
-      icon: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
+      icon: AnimatedSwitcher(
+        duration: Motion.page,
+        switchInCurve: Motion.enter,
+        switchOutCurve: Motion.exit,
+        transitionBuilder: (child, animation) => RotationTransition(
+          turns: Tween<double>(begin: -0.25, end: 0).animate(animation),
+          child: FadeTransition(opacity: animation, child: child),
+        ),
+        child: Icon(
+          isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+          key: ValueKey(isDark),
+        ),
+      ),
       onPressed: () => context.read<ThemeCubit>().toggle(brightness),
     );
   }

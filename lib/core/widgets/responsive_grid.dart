@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:portfolio/core/layout/breakpoints.dart';
 
-/// Lays children out in equal-width columns; the column count depends on the
-/// *available* width, not the screen, so it also works inside nested layouts.
+/// Lays children out in rows of equal-width columns. The column count
+/// follows the screen size.
+///
+/// Deliberately built from Rows instead of a LayoutBuilder: any rebuild
+/// inside a LayoutBuilder (a hover or reveal animation tick) forces the
+/// builder to lay out again, and with no relayout boundary above it that
+/// means the whole page, every frame.
 class ResponsiveGrid extends StatelessWidget {
   const ResponsiveGrid({
     required this.children,
@@ -21,25 +26,36 @@ class ResponsiveGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final width = constraints.maxWidth;
-        // Content is inset by the gutter, so compare against the screen size.
-        final columns = switch (context.screenSize) {
-          ScreenSize.mobile => mobile,
-          ScreenSize.tablet => tablet,
-          ScreenSize.desktop => desktop,
-        };
-        final itemWidth = (width - spacing * (columns - 1)) / columns;
-        return Wrap(
-          spacing: spacing,
-          runSpacing: spacing,
+    final columns = switch (context.screenSize) {
+      ScreenSize.mobile => mobile,
+      ScreenSize.tablet => tablet,
+      ScreenSize.desktop => desktop,
+    };
+
+    final rows = <Widget>[];
+    for (var start = 0; start < children.length; start += columns) {
+      if (rows.isNotEmpty) rows.add(SizedBox(height: spacing));
+      rows.add(
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            for (final child in children)
-              SizedBox(width: itemWidth, child: child),
+            for (var column = 0; column < columns; column++) ...[
+              if (column > 0) SizedBox(width: spacing),
+              Expanded(
+                // Empty cells keep a short last row aligned to the grid.
+                child: start + column < children.length
+                    ? children[start + column]
+                    : const SizedBox.shrink(),
+              ),
+            ],
           ],
-        );
-      },
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: rows,
     );
   }
 }
