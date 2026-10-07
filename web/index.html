@@ -1,46 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
+  <!-- Replaced by the `--base-href` argument of `flutter build web`. -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fawad Shah · Senior Flutter Engineer</title>
+  <meta name="description" content="Senior Flutter engineer with 5+ years shipping cross-platform Android and iOS apps: clean architecture, testing, CI/CD and performance. Based in Sharjah, UAE, open to remote roles.">
+  <meta name="author" content="Fawad Shah">
+  <meta name="theme-color" content="#0B0F17" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#F7F8FA" media="(prefers-color-scheme: light)">
+
+  <!-- Link previews (LinkedIn, Slack, WhatsApp, X).
+       Once a domain is live, add og:url and make og:image absolute:
+       https://<domain>/og-image.png -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Fawad Shah · Senior Flutter Engineer">
+  <meta property="og:description" content="I build Flutter apps that hold up in production. Case studies, experience and CV.">
+  <meta property="og:image" content="og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="portfolio">
+  <meta name="apple-mobile-web-app-title" content="Fawad Shah">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>portfolio</title>
+  <link rel="icon" type="image/png" href="favicon.png">
   <link rel="manifest" href="manifest.json">
+
+  <!-- Start fetching the fonts while the engine boots. -->
+  <link rel="preload" href="assets/assets/fonts/SpaceGrotesk-Bold.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="assets/assets/fonts/Inter-Regular.ttf" as="font" type="font/ttf" crossorigin>
+
+  <style>
+    :root { --bg: #F7F8FA; --fg: #0E1420; --muted: #6B7584; --accent: #0A6FD6; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #0B0F17; --fg: #EDF1F7; --muted: #8590A2; --accent: #54B4FF; }
+    }
+    html, body { margin: 0; background: var(--bg); color: var(--fg); }
+    #splash {
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 20px;
+      font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+      transition: opacity .25s ease;
+    }
+    #splash .mark {
+      width: 48px; height: 48px; border-radius: 12px; background: var(--accent);
+      color: var(--bg); display: grid; place-items: center; font-weight: 700;
+      font-size: 18px; animation: pulse 1.2s ease-in-out infinite;
+    }
+    #splash p { margin: 0; color: var(--muted); }
+    #splash.done { opacity: 0; pointer-events: none; }
+    @keyframes pulse { 50% { transform: scale(.92); opacity: .7; } }
+    @media (prefers-reduced-motion: reduce) { #splash .mark { animation: none; } }
+  </style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
-
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
+  <!-- Shown until Flutter paints its first frame. Also the content that
+       crawlers and no-JS visitors read, so it carries the essentials. -->
+  <div id="splash" role="status">
+    <div class="mark" aria-hidden="true">FS</div>
+    <p>Fawad Shah · Senior Flutter Engineer</p>
+  </div>
+  <noscript>
+    <main style="max-width:640px;margin:15vh auto;padding:0 20px;font-family:system-ui,sans-serif">
+      <h1>Fawad Shah, Senior Flutter Engineer</h1>
+      <p>I build Flutter apps that hold up in production. 5+ years shipping
+        cross-platform Android and iOS apps. Sharjah, UAE, open to remote roles.</p>
+      <p><a href="Fawad-Shah-CV.pdf">Download CV</a> ·
+        <a href="mailto:fawadshah2117@gmail.com">fawadshah2117@gmail.com</a> ·
+        <a href="https://www.linkedin.com/in/fawad-shah-824931183">LinkedIn</a> ·
+        <a href="https://github.com/phawadshah2">GitHub</a></p>
+      <p>This site is a Flutter Web app. Enable JavaScript to see the full version.</p>
+    </main>
+  </noscript>
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      var splash = document.getElementById('splash');
+      splash.classList.add('done');
+      setTimeout(function () { splash.remove(); }, 300);
+    });
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
