@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
 import { platformLabel, projectPath, type Project } from '../lib/content';
+import { url } from '../lib/paths';
 
 interface Props {
   project: Project;
@@ -12,7 +13,7 @@ interface Props {
 
 const { project, wide = false, delay = 0 } = Astro.props;
 const { data } = project;
-const href = projectPath(project);
+const href = url(projectPath(project));
 const metrics = wide ? data.metrics : data.metrics.slice(0, 2);
 const poster = data.cover ?? data.screenshots[0]?.src;
 ---

@@ -2,7 +2,10 @@
 import '../styles/global.css';
 import Footer from '../components/Footer.astro';
 import Nav from '../components/Nav.astro';
+import interUrl from '../assets/fonts/Inter-Regular.woff2?url';
+import groteskUrl from '../assets/fonts/SpaceGrotesk-Bold.woff2?url';
 import { getProfile } from '../lib/content';
+import { url } from '../lib/paths';
 
 interface Props {
   title?: string;
@@ -22,10 +25,11 @@ const description =
 // Absolute URLs need the deployed domain (SITE_URL); without it the tags
 // fall back to relative paths, which most previewers still resolve.
 const site = Astro.site;
-const canonical = site ? new URL(Astro.url.pathname, site).href : undefined;
-const image = site
-  ? new URL(Astro.props.image ?? '/og-image.png', site).href
-  : (Astro.props.image ?? '/og-image.png');
+// Clean URL: /portfolio/projects/x rather than .../x.html (build.format is 'file').
+const cleanPath = Astro.url.pathname.replace(/(index)?\.html$/, '');
+const canonical = site ? new URL(cleanPath, site).href : undefined;
+const imagePath = url(Astro.props.image ?? '/og-image.png');
+const image = site ? new URL(imagePath, site).href : imagePath;
 
 const person = {
   '@context': 'https://schema.org',
@@ -60,13 +64,13 @@ const person = {
 
     <meta name="theme-color" content="#F7F8FA" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0B0F17" media="(prefers-color-scheme: dark)" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
-    {site && <link rel="sitemap" href="/sitemap-index.xml" />}
+    <link rel="icon" type="image/png" href={url('/favicon.png')} />
+    <link rel="apple-touch-icon" href={url('/icons/icon-192.png')} />
+    <link rel="manifest" href={url('/manifest.webmanifest')} />
+    {site && <link rel="sitemap" href={url('/sitemap-index.xml')} />}
 
-    <link rel="preload" href="/fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/SpaceGrotesk-Bold.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={interUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={groteskUrl} as="font" type="font/woff2" crossorigin />
 
     <script type="application/ld+json" set:html={JSON.stringify(person)} />
 

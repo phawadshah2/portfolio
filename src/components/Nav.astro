@@ -1,4 +1,5 @@
 ---
+import { url } from '../lib/paths';
 import Icon from './Icon.astro';
 
 interface Props {
@@ -7,16 +8,16 @@ interface Props {
 const { name } = Astro.props;
 
 const links = [
-  { href: '/#work', label: 'Work' },
-  { href: '/#experience', label: 'Experience' },
-  { href: '/#skills', label: 'Skills' },
-  { href: '/#contact', label: 'Contact' },
+  { href: url('/#work'), label: 'Work' },
+  { href: url('/#experience'), label: 'Experience' },
+  { href: url('/#skills'), label: 'Skills' },
+  { href: url('/#contact'), label: 'Contact' },
 ];
 ---
 
 <header class="nav">
   <div class="container nav-inner">
-    <a href="/" class="logo" aria-label={`${name}, home`}>
+    <a href={url('/')} class="logo" aria-label={`${name}, home`}>
       <span class="mark" aria-hidden="true">FS</span>
       <span class="logo-name">{name}</span>
     </a>
