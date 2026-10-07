@@ -1,38 +1,20 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+
+# environment variables
+.env
+.env.production
+
+# OS / editors
 .DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
-
-# IntelliJ / VS Code
-*.iml
-*.ipr
-*.iws
 .idea/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
-/coverage/
-
-# Golden test failures
-**/failures/
 
 # Firebase
 .firebase/
-
-# FVM Version Cache
-.fvm/

@@ -1,0 +1,100 @@
+---
+import Icon, { type IconName } from './Icon.astro';
+
+interface Props {
+  href: string;
+  variant?: 'primary' | 'secondary' | 'text';
+  icon?: IconName;
+  /** Icon before the label (e.g. a back arrow). */
+  leading?: boolean;
+  external?: boolean;
+  download?: boolean;
+  class?: string;
+}
+
+const {
+  href,
+  variant = 'primary',
+  icon,
+  leading = false,
+  external = false,
+  download = false,
+  class: className,
+} = Astro.props;
+
+// On hover the icon nudges the way it points, hinting where the click goes.
+const nudge: Partial<Record<IconName, string>> = {
+  'arrow-right': '3px, 0',
+  play: '3px, 0',
+  'arrow-left': '-3px, 0',
+  'arrow-up-right': '2px, -2px',
+  download: '0, 2px',
+  mail: '0, -2px',
+};
+---
+
+<a
+  href={href}
+  class:list={['btn', `btn-${variant}`, className]}
+  style={icon && nudge[icon] ? `--nudge: ${nudge[icon]}` : undefined}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noopener noreferrer' : undefined}
+  download={download || undefined}
+>
+  {icon && leading && <Icon name={icon} />}
+  <span><slot /></span>
+  {icon && !leading && <Icon name={icon} />}
+  {external && <span class="visually-hidden">(opens in a new tab)</span>}
+</a>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 0 20px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    transition:
+      background-color var(--t-hover) var(--ease-out),
+      border-color var(--t-hover) var(--ease-out),
+      color var(--t-hover) var(--ease-out);
+  }
+  .btn :global(.icon) {
+    transition: transform var(--t-hover) var(--ease-out);
+  }
+  @media (hover: hover) {
+    .btn:hover :global(.icon) {
+      transform: translate(var(--nudge, 0, 0));
+    }
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+  .btn-primary:hover {
+    background: color-mix(in srgb, var(--accent) 88%, var(--text));
+  }
+
+  .btn-secondary {
+    border-color: var(--border);
+    color: var(--text);
+  }
+  .btn-secondary:hover {
+    border-color: var(--text-muted);
+  }
+
+  .btn-text {
+    padding: 0 12px;
+    color: var(--text-2);
+  }
+  .btn-text:hover {
+    color: var(--text);
+  }
+</style>

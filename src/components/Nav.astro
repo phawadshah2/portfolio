@@ -1,0 +1,277 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  name: string;
+}
+const { name } = Astro.props;
+
+const links = [
+  { href: '/#work', label: 'Work' },
+  { href: '/#experience', label: 'Experience' },
+  { href: '/#skills', label: 'Skills' },
+  { href: '/#contact', label: 'Contact' },
+];
+---
+
+<header class="nav">
+  <div class="container nav-inner">
+    <a href="/" class="logo" aria-label={`${name}, home`}>
+      <span class="mark" aria-hidden="true">FS</span>
+      <span class="logo-name">{name}</span>
+    </a>
+
+    <nav aria-label="Main">
+      <ul class="links">
+        {links.map((l) => <li><a href={l.href} class="link">{l.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <div class="actions">
+      <button
+        type="button"
+        class="icon-btn theme-toggle"
+        data-theme-toggle
+        aria-label="Toggle dark theme"
+      >
+        <Icon name="moon" class="i-moon" />
+        <Icon name="sun" class="i-sun" />
+      </button>
+
+      <!-- <details> works without JavaScript; the script only closes it. -->
+      <details class="menu" data-menu>
+        <summary class="icon-btn" aria-label="Menu">
+          <Icon name="menu" class="i-open" />
+          <Icon name="close" class="i-close" />
+        </summary>
+        <ul class="menu-panel">
+          {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        </ul>
+      </details>
+    </div>
+  </div>
+</header>
+
+<script>
+  const root = document.documentElement;
+  const toggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+
+  const isDark = () =>
+    root.dataset.theme
+      ? root.dataset.theme === 'dark'
+      : matchMedia('(prefers-color-scheme: dark)').matches;
+
+  const sync = () => toggle?.setAttribute('aria-pressed', String(isDark()));
+  sync();
+
+  toggle?.addEventListener('click', () => {
+    const next = isDark() ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem('theme', next);
+    } catch {
+      /* Private mode: the choice just lasts for this page view. */
+    }
+    sync();
+  });
+
+  // Close the mobile menu after choosing a section or tapping outside.
+  const menu = document.querySelector<HTMLDetailsElement>('[data-menu]');
+  menu?.querySelectorAll('a').forEach((a) =>
+    a.addEventListener('click', () => menu.removeAttribute('open')),
+  );
+  document.addEventListener('click', (event) => {
+    if (menu?.open && !menu.contains(event.target as Node)) menu.removeAttribute('open');
+  });
+</script>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 64px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-right: auto;
+    font-weight: 600;
+    font-size: 1.0625rem;
+  }
+  .mark {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: var(--on-accent);
+    font: 700 0.8125rem/1 var(--font-display);
+    transition: transform var(--t-hover) var(--ease-out);
+  }
+  @media (hover: hover) {
+    .logo:hover .mark {
+      transform: scale(1.08) rotate(-4deg);
+    }
+  }
+
+  .links {
+    display: none;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .link {
+    position: relative;
+    display: block;
+    padding: 8px 14px;
+    color: var(--text-2);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    transition: color var(--t-hover) var(--ease-out);
+  }
+  /* Underline grows from the left; scaleX is compositor-only. */
+  .link::after {
+    content: '';
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 4px;
+    height: 1.5px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--t-hover) var(--ease-out);
+  }
+  .link:hover {
+    color: var(--text);
+  }
+  .link:hover::after {
+    transform: scaleX(1);
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .icon-btn {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 10px;
+    background: none;
+    color: var(--text-2);
+    cursor: pointer;
+    transition:
+      background-color var(--t-hover) var(--ease-out),
+      color var(--t-hover) var(--ease-out);
+  }
+  .icon-btn:hover {
+    background: var(--surface-raised);
+    color: var(--text);
+  }
+  .icon-btn > :global(.icon) {
+    grid-area: 1 / 1;
+    transition:
+      transform 300ms var(--ease-out),
+      opacity 200ms var(--ease-out);
+  }
+
+  /* Theme icons cross-fade and rotate. */
+  .theme-toggle :global(.i-sun) {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.6);
+  }
+  :global(:root[data-theme='dark']) .theme-toggle :global(.i-sun) {
+    opacity: 1;
+    transform: none;
+  }
+  :global(:root[data-theme='dark']) .theme-toggle :global(.i-moon) {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.6);
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .theme-toggle :global(.i-sun) {
+      opacity: 1;
+      transform: none;
+    }
+    :global(:root:not([data-theme='light'])) .theme-toggle :global(.i-moon) {
+      opacity: 0;
+      transform: rotate(90deg) scale(0.6);
+    }
+  }
+
+  .menu {
+    position: relative;
+  }
+  .menu summary {
+    list-style: none;
+  }
+  .menu summary::-webkit-details-marker {
+    display: none;
+  }
+  .menu :global(.i-close),
+  .menu[open] :global(.i-open) {
+    opacity: 0;
+    transform: rotate(-90deg);
+  }
+  .menu[open] :global(.i-close) {
+    opacity: 1;
+    transform: none;
+  }
+  .menu-panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    min-width: 200px;
+    margin: 0;
+    padding: 8px;
+    list-style: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 16px 40px -12px rgb(0 0 0 / 0.25);
+    transform-origin: top right;
+    animation: menu-in 180ms var(--ease-out);
+  }
+  .menu-panel a {
+    display: block;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+  .menu-panel a:hover {
+    background: var(--surface-raised);
+  }
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96) translateY(-4px);
+    }
+  }
+
+  @media (min-width: 700px) {
+    .links {
+      display: flex;
+    }
+    .menu {
+      display: none;
+    }
+  }
+</style>

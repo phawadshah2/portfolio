@@ -1,0 +1,45 @@
+# Newest first (lower `order` comes first).
+- id: star-gallery-mart
+  order: 1
+  role: Senior Flutter Developer
+  company: Star Gallery Mart
+  location: Sharjah, UAE
+  period: May 2024 – Present
+  highlights:
+    - >-
+      Own the architecture and delivery of a cross-platform e-commerce app
+      serving 20K+ active users on the App Store and Google Play.
+    - >-
+      Shipped 12+ features with product, design and backend teams, including
+      secure checkout with Apple Pay, Google Pay, Stripe, Tabby and Tamara.
+    - >-
+      Cut startup time by 35% and memory usage by 25% through DevTools
+      profiling, image caching and lazy loading.
+  stack: [Flutter, GetX, MVVM, Platform Channels, GitHub Actions]
+
+- id: tritech-solutions
+  order: 2
+  role: Flutter Developer
+  company: Tritech Solutions
+  location: Peshawar, Pakistan
+  period: Jan 2022 – Mar 2024
+  highlights:
+    - >-
+      Delivered 3 apps end to end for e-commerce and health-tech clients, from
+      requirements to App Store and Play Store release.
+    - >-
+      Introduced Clean Architecture and the Repository pattern, cutting
+      new-developer onboarding time by 50%.
+    - Mentored 2 junior developers through pairing and code review.
+  stack: [Flutter, Provider, BLoC, Firebase, Google Maps]
+
+- id: appspot
+  order: 3
+  role: Junior Flutter Developer
+  company: AppSpot
+  location: Peshawar, Pakistan
+  period: Feb 2021 – Nov 2021
+  highlights:
+    - Contributed to 5 product releases across consumer and enterprise apps.
+    - Built a shared widget library that sped up feature development by 30%.
+  stack: [Flutter, GetX, REST]

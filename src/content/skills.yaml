@@ -1,0 +1,63 @@
+- id: flutter-dart
+  order: 1
+  title: Flutter & Dart
+  skills:
+    - Flutter (Android, iOS, Web)
+    - 'Dart 3: sealed classes, patterns, records'
+    - Material & Cupertino
+    - Responsive & RTL layouts
+    - 'Animations: explicit, Rive, Lottie'
+
+- id: state-architecture
+  order: 2
+  title: State & architecture
+  skills:
+    - BLoC / Cubit
+    - Riverpod
+    - Provider
+    - GetX
+    - Clean Architecture
+    - MVVM
+    - Repository pattern
+    - Dependency injection
+
+- id: data-integrations
+  order: 3
+  title: Data & integrations
+  skills:
+    - REST, Dio, JSON
+    - Drift / SQLite
+    - 'Firebase: Firestore, Auth, FCM, Crashlytics'
+    - Stripe, Apple Pay, Google Pay
+    - Tabby, Tamara
+    - Google Maps SDK
+    - Google, Apple & Facebook sign-in
+
+- id: native-security
+  order: 4
+  title: Native & security
+  skills:
+    - Platform Channels
+    - Deep links & push notifications
+    - Flavors & environments
+    - JWT & secure sessions
+    - Keychain / Keystore
+
+- id: quality-delivery
+  order: 5
+  title: Quality & delivery
+  skills:
+    - Unit, widget & integration tests
+    - GitHub Actions CI/CD
+    - Release signing
+    - App Store & Play releases
+    - DevTools profiling
+
+- id: ways-of-working
+  order: 6
+  title: Ways of working
+  skills:
+    - Agile / Scrum
+    - Code review & mentoring
+    - Conventional Commits
+    - AI-assisted development

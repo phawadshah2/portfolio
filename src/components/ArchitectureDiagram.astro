@@ -1,0 +1,104 @@
+---
+import Icon from './Icon.astro';
+
+interface Layer {
+  name: string;
+  responsibility: string;
+  parts: string[];
+  core: boolean;
+}
+interface Props {
+  layers: Layer[];
+}
+
+const { layers } = Astro.props;
+const coreIndex = layers.findIndex((l) => l.core);
+// Arrows point from each layer towards the core layer it depends on.
+const arrowFor = (gapIndex: number) => (gapIndex < coreIndex ? 'forward' : 'back');
+---
+
+<figure class="diagram" aria-label="Architecture layers and their dependencies">
+  {
+    layers.map((layer, i) => (
+      <>
+        {i > 0 && (
+          <div class:list={['arrow', arrowFor(i - 1)]} aria-hidden="true">
+            <Icon name="arrow-right" size={20} />
+          </div>
+        )}
+        <section
+          class:list={['layer', { core: layer.core }]}
+          data-reveal
+          style={`--d: ${layer.core ? layers.length : i}`}
+        >
+          <h3 class="title">{layer.name}</h3>
+          <p class="resp">{layer.responsibility}</p>
+          <ul>
+            {layer.parts.map((p) => <li>{p}</li>)}
+          </ul>
+        </section>
+      </>
+    ))
+  }
+  <figcaption class="visually-hidden">
+    {layers.filter((l) => !l.core).map((l) => l.name).join(' and ')} depend on
+    {layers[coreIndex]?.name}.
+  </figcaption>
+</figure>
+
+<style>
+  .diagram {
+    display: grid;
+    margin: 0;
+  }
+  .layer {
+    padding: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .core {
+    background: var(--accent-soft);
+    border: 1.5px solid var(--accent);
+  }
+  .resp {
+    margin: 8px 0 16px;
+    color: var(--text-2);
+    font-size: 0.9375rem;
+  }
+  ul {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font: 500 0.8125rem/1.5 var(--font-mono);
+    color: var(--text-muted);
+  }
+  .arrow {
+    display: grid;
+    place-items: center;
+    padding: 10px;
+    color: var(--accent);
+  }
+  /* Vertical stack: down towards the core, then up into it. */
+  .arrow.forward :global(.icon) {
+    transform: rotate(90deg);
+  }
+  .arrow.back :global(.icon) {
+    transform: rotate(-90deg);
+  }
+
+  @media (min-width: 1080px) {
+    .diagram {
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      align-items: stretch;
+    }
+    .arrow.forward :global(.icon) {
+      transform: none;
+    }
+    .arrow.back :global(.icon) {
+      transform: rotate(180deg);
+    }
+  }
+</style>

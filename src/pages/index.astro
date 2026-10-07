@@ -1,0 +1,339 @@
+---
+import Button from '../components/Button.astro';
+import CopyEmail from '../components/CopyEmail.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Base from '../layouts/Base.astro';
+import { getExperience, getProfile, getProjects, getSkills, projectPath } from '../lib/content';
+
+const profile = await getProfile();
+const experience = await getExperience();
+const skills = await getSkills();
+const projects = await getProjects();
+const featured = projects.filter((p) => p.data.featured);
+const shown = featured.length > 0 ? featured : projects.slice(0, 3);
+const lead = shown[0];
+---
+
+<Base>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-inner">
+      <p class="badge" data-reveal style="--d: 0; --reveal-offset: 16px">
+        <span class="dot" aria-hidden="true"></span>
+        {profile.availability} · {profile.location}
+      </p>
+      <p class="eyebrow" data-reveal style="--d: 1; --reveal-offset: 16px">
+        {profile.name} — {profile.role}
+      </p>
+      <h1 class="display-xl" data-reveal style="--d: 2; --reveal-offset: 16px">
+        {profile.headline}
+      </h1>
+      <p class="lead" data-reveal style="--d: 3; --reveal-offset: 16px">{profile.intro}</p>
+      <div class="cta" data-reveal style="--d: 4; --reveal-offset: 16px">
+        {lead && <Button href={projectPath(lead)} icon="arrow-right">Read the case study</Button>}
+        <Button href={profile.cv} variant="secondary" icon="download" download>Download CV</Button>
+        <Button href="#contact" variant="text">Get in touch</Button>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="section" aria-labelledby="about-title">
+    <div class="container">
+      <SectionHead
+        eyebrow="About"
+        title="Production apps, real users, measurable results."
+        id="about-title"
+      />
+      <div class="about">
+        <div class="about-text" data-reveal>
+          {profile.about.map((p) => <p class="lead">{p}</p>)}
+        </div>
+        <dl class="stats">
+          {
+            profile.stats.map((s, i) => (
+              <div class="card stat" data-reveal style={`--d: ${i}`}>
+                <dt class="muted">{s.label}</dt>
+                <dd class="stat-value" data-count={s.value}>{s.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- Work -->
+  <section class="section" id="work" aria-labelledby="work-title">
+    <div class="container">
+      <SectionHead eyebrow="Selected work" title="Case studies" id="work-title" />
+      <div class="work">
+        {shown.map((p, i) => <ProjectCard project={p} wide={i === 0} delay={i} />)}
+      </div>
+      {
+        projects.length > shown.length && (
+          <div class="all-projects" data-reveal>
+            <Button href="/projects" variant="secondary" icon="arrow-right">
+              All {projects.length} projects
+            </Button>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- Experience -->
+  <section class="section" id="experience" aria-labelledby="experience-title">
+    <div class="container">
+      <SectionHead eyebrow="Experience" title="Where I have shipped" id="experience-title" />
+      <ol class="timeline">
+        {
+          experience.map((e) => (
+            <li class="job" data-reveal>
+              <p class="period eyebrow">{e.period}</p>
+              <div>
+                <h3 class="title">{e.role}</h3>
+                <p class="company">
+                  {e.company} · {e.location}
+                </p>
+                <ul class="highlights">
+                  {e.highlights.map((h) => <li>{h}</li>)}
+                </ul>
+                <ul class="tags" aria-label="Stack">
+                  {e.stack.map((t) => <li>{t}</li>)}
+                </ul>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- Skills -->
+  <section class="section" id="skills" aria-labelledby="skills-title">
+    <div class="container">
+      <SectionHead eyebrow="Skills" title="The toolbox" id="skills-title" />
+      <div class="grid">
+        {
+          skills.map((g, i) => (
+            <div class="card" data-reveal style={`--d: ${i % 3}`}>
+              <h3 class="skill-title">{g.title}</h3>
+              <ul class="tags">
+                {g.skills.map((s) => <li>{s}</li>)}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="section" id="contact" aria-labelledby="contact-title">
+    <div class="container">
+      <div class="contact" data-reveal>
+        <p class="eyebrow">Contact</p>
+        <h2 class="display-l" id="contact-title">Hiring for a Flutter role? Let’s talk.</h2>
+        <p class="lead">
+          {profile.availability}. Based in {profile.location}. Email is the fastest way to reach me.
+        </p>
+        <div class="contact-actions">
+          <Button href={`mailto:${profile.email}`} icon="mail">{profile.email}</Button>
+          <CopyEmail email={profile.email} />
+        </div>
+        <div class="contact-links">
+          <Button href={profile.linkedin} variant="text" icon="arrow-up-right" external>LinkedIn</Button>
+          <Button href={profile.github} variant="text" icon="arrow-up-right" external>GitHub</Button>
+          <Button href={profile.cv} variant="text" icon="download" download>Download CV</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    background: radial-gradient(
+      ellipse 80% 70% at 95% -10%,
+      var(--accent-soft),
+      transparent 70%
+    );
+  }
+  .hero-inner {
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+    max-width: 860px;
+    padding-block: clamp(56px, 10vw, 128px) clamp(56px, 8vw, 104px);
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    background: var(--surface);
+    color: var(--text-2);
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--success) 50%, transparent);
+    animation: pulse 2.4s var(--ease-out) infinite;
+  }
+  @keyframes pulse {
+    70% {
+      box-shadow: 0 0 0 8px transparent;
+    }
+  }
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .about {
+    display: grid;
+    gap: 40px;
+  }
+  .about-text {
+    display: grid;
+    gap: 20px;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 0;
+    align-content: start;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: 4px;
+    padding: 20px;
+  }
+  .stat dt {
+    font-size: 0.875rem;
+  }
+  .stat dd {
+    margin: 0;
+  }
+  @media (min-width: 1080px) {
+    .about {
+      grid-template-columns: 3fr 2fr;
+      gap: 64px;
+    }
+  }
+
+  .work {
+    display: grid;
+    gap: 20px;
+  }
+  @media (min-width: 700px) {
+    .work {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .work > :global(.wide) {
+      grid-column: 1 / -1;
+    }
+  }
+  .all-projects {
+    margin-top: 32px;
+  }
+
+  .timeline {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .job {
+    display: grid;
+    gap: 8px;
+    padding-block: 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .job:first-child {
+    padding-top: 0;
+  }
+  .job:last-child {
+    border-bottom: 0;
+  }
+  .period {
+    color: var(--text-muted);
+  }
+  .company {
+    margin: 4px 0 16px;
+    color: var(--accent);
+  }
+  .highlights {
+    display: grid;
+    gap: 10px;
+    margin: 0 0 20px;
+    padding-left: 20px;
+    color: var(--text-2);
+  }
+  .highlights li::marker {
+    color: var(--text-muted);
+  }
+  @media (min-width: 700px) {
+    .job {
+      grid-template-columns: 220px 1fr;
+    }
+    .period {
+      padding-top: 6px;
+    }
+  }
+
+  .skill-title {
+    margin-bottom: 16px;
+    font-family: var(--font-body);
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+
+  .contact {
+    display: grid;
+    gap: 16px;
+    justify-items: start;
+    padding: clamp(28px, 6vw, 64px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: var(--accent-soft);
+  }
+  .contact .lead {
+    max-width: 640px;
+  }
+  .contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    max-width: 100%;
+    margin-top: 16px;
+  }
+  .contact-actions :global(.btn-primary) {
+    max-width: 100%;
+  }
+  .contact-actions :global(.btn-primary span) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .contact-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-left: -12px;
+  }
+</style>
