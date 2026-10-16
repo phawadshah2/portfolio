@@ -16,7 +16,8 @@ projects and the contact details are **sample content**, marked `draft: true`.
 
 While any draft remains:
 - every page shows a **"Draft preview" banner** and carries `noindex`;
-- CI **refuses to deploy `main`** (`npm run check:drafts` lists the files).
+- CI still deploys, but posts a **warning** listing the draft files
+  (`npm run check:drafts` locally fails while any remain).
 
 To go live, replace the sample content with real data:
 - `src/content/home.yaml`: hero, metrics, services, process, stack, testimonials, contact

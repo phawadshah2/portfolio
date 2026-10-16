@@ -47,11 +47,12 @@ jobs:
           SITE_URL: ${{ steps.pages.outputs.origin }}
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
 
-      # Sample content from the design must never go live under your name.
-      # Fails (and blocks the deploy) while any `draft: true` remains.
-      - name: Refuse to publish draft content
+      # Sample content from the design may go live only as a labelled draft:
+      # pages show a "Draft preview" banner and are noindexed while any
+      # `draft: true` remains. This step lists those files as a warning.
+      - name: Report draft content
         if: github.ref == 'refs/heads/main'
-        run: npm run check:drafts
+        run: npm run check:drafts -- --warn
 
       - name: Upload site for GitHub Pages
         if: github.ref == 'refs/heads/main'

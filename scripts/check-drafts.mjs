@@ -1,7 +1,12 @@
-// Fails when any content file still contains `draft: true`, i.e. the Stitch
-// design's sample content (placeholder employers, stats, testimonials). CI
-// runs this before deploying main so sample data is never published under
-// your name. Remove the `draft: true` lines once the content is real.
+// Lists content files that still contain `draft: true`, i.e. the Stitch
+// design's sample content (placeholder employers, stats, testimonials).
+//
+//   node scripts/check-drafts.mjs          fail if any draft remains
+//   node scripts/check-drafts.mjs --warn   report only (CI uses this)
+//
+// Drafts may be deployed because the site labels them itself: while any
+// draft remains, every page shows a "Draft preview" banner and carries
+// `noindex` (see hasDraftContent() in src/lib/content.ts).
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -19,10 +24,17 @@ const walk = (dir) => {
 };
 roots.forEach(walk);
 
+const warnOnly = process.argv.includes('--warn');
 if (hits.length) {
-  console.error('Draft (sample) content is still present, so this will not be published:');
-  for (const h of hits) console.error(`  - ${h}`);
-  console.error('Replace it with real data and remove the draft markers to deploy.');
+  const list = hits.map((h) => `  - ${h}`).join('\n');
+  if (warnOnly) {
+    // GitHub Actions annotation: shows on the run summary.
+    console.log(`::warning title=Draft content is live::${hits.length} file(s) still hold sample content; pages show a Draft banner and are noindexed.`);
+    console.log(`Draft (sample) content still present:\n${list}`);
+    process.exit(0);
+  }
+  console.error(`Draft (sample) content is still present:\n${list}`);
+  console.error('Replace it with real data and remove the draft markers.');
   process.exit(1);
 }
 console.log('No draft content. OK to publish.');
