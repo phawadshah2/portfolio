@@ -1,0 +1,531 @@
+---
+/** Aura Market app screens from the case-study design. */
+import Icon from '../Icon.astro';
+
+interface Props {
+  screen: 'browse' | 'detail' | 'tracking';
+}
+const { screen } = Astro.props;
+---
+
+{
+  screen === 'browse' && (
+    <div class="s browse">
+      <div class="bar">
+        <div>
+          <p class="over">Delivery to</p>
+          <p class="strong loc">
+            Downtown Dubai <Icon name="chevron-down" size={14} />
+          </p>
+        </div>
+        <span class="round">
+          <Icon name="bell" size={16} />
+        </span>
+      </div>
+      <div class="search">
+        <Icon name="search" size={15} />
+        Search 14,000+ groceries &amp; organics...
+      </div>
+      <div class="cats">
+        <span class="cat on">Fresh Harvest</span>
+        <span class="cat">Beverages</span>
+        <span class="cat">Bakery</span>
+      </div>
+      <div class="grid">
+        <div class="item">
+          <div class="thumb">
+            <Icon name="leaf" size={22} />
+          </div>
+          <p class="strong clip">Organic Haas Avocado</p>
+          <p class="sub">500g • Mexico</p>
+          <div class="price-row">
+            <span class="price">AED 14.50</span>
+            <span class="plus">+</span>
+          </div>
+        </div>
+        <div class="item">
+          <div class="thumb">
+            <Icon name="cup" size={22} />
+          </div>
+          <p class="strong clip">Cold Brew Blend</p>
+          <p class="sub">330ml • Artisan</p>
+          <div class="price-row">
+            <span class="price">AED 21.00</span>
+            <span class="plus">+</span>
+          </div>
+        </div>
+      </div>
+      <div class="spacer" />
+      <div class="cart">
+        <span class="count">2</span>
+        <span>AED 35.50</span>
+        <span class="view">
+          View Cart <Icon name="arrow-right" size={13} />
+        </span>
+      </div>
+    </div>
+  )
+}
+
+{
+  screen === 'detail' && (
+    <div class="s detail">
+      <div class="bar">
+        <span class="round">
+          <Icon name="arrow-left" size={15} />
+        </span>
+        <span class="small-title">Item Detail</span>
+        <span class="round">
+          <Icon name="heart" size={15} />
+        </span>
+      </div>
+      <div class="hero-img">
+        <Icon name="leaf" size={44} />
+        <span class="stock">In Stock (Instant 18m)</span>
+      </div>
+      <div class="title-row">
+        <div>
+          <p class="name">Sourdough Country Loaf</p>
+          <p class="sub">Natural wild starter, wood-fired daily</p>
+        </div>
+        <span class="big-price">AED 18</span>
+      </div>
+      <div class="facts">
+        <div>
+          <span>Calories</span>
+          <strong>210 kcal</strong>
+        </div>
+        <div>
+          <span>Hydration</span>
+          <strong>82%</strong>
+        </div>
+        <div>
+          <span>Weight</span>
+          <strong>650g</strong>
+        </div>
+      </div>
+      <div>
+        <p class="strong">Delivery Time Guarantee</p>
+        <p class="sub dispatch">
+          <Icon name="bolt" size={12} /> Dispatched from Al Quoz Hub within 8 mins.
+        </p>
+      </div>
+      <div class="spacer" />
+      <div class="qty">
+        <span>
+          Quantity: <strong>1 loaf</strong>
+        </span>
+        <span class="change">Change</span>
+      </div>
+      <div class="pay">
+        <strong> Pay</strong> with Apple Pay
+      </div>
+    </div>
+  )
+}
+
+{
+  screen === 'tracking' && (
+    <div class="s tracking">
+      <div class="map" aria-hidden="true">
+        <svg viewBox="0 0 240 420" preserveAspectRatio="none">
+          <path class="route" d="M150 70 C 140 120, 100 140, 110 200 S 70 300, 60 420" />
+        </svg>
+        <span class="pin" />
+        <span class="courier" />
+      </div>
+      <div class="eta">
+        <div class="eta-top">
+          <span class="gps">Live Courier GPS</span>
+          <span class="id">ID: #DXB-9841</span>
+        </div>
+        <p class="eta-main">Arriving in 9 minutes</p>
+      </div>
+      <div class="spacer" />
+      <div class="driver">
+        <div class="driver-row">
+          <span class="avatar">TR</span>
+          <div class="driver-who">
+            <p class="strong">Tariq Ramadan</p>
+            <p class="sub">
+              <Icon name="star" size={10} /> 4.96 • Yamaha NMAX
+            </p>
+          </div>
+          <span class="round green">
+            <Icon name="call" size={14} />
+          </span>
+          <span class="round">
+            <Icon name="chat" size={14} />
+          </span>
+        </div>
+        <div class="progress">
+          <span />
+        </div>
+        <div class="progress-labels">
+          <span>Picked up at Al Quoz Hub</span>
+          <span class="out">Out for Delivery</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .s {
+    position: relative;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+    padding: 6px 12px 12px;
+    font-size: 10.5px;
+    line-height: 1.35;
+  }
+  .spacer {
+    flex: 1;
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .over {
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+  .strong {
+    font-weight: 600;
+  }
+  .loc {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 12px;
+  }
+  .sub {
+    color: var(--text-2);
+    font-size: 9px;
+  }
+  .round {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--surface-container);
+  }
+  .round.green {
+    background: var(--primary-soft);
+    color: var(--primary);
+  }
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 10px;
+    border-radius: var(--r);
+    border: 1px solid var(--border);
+    background: var(--surface-low);
+    color: var(--text-2);
+  }
+  .cats {
+    display: flex;
+    gap: 6px;
+  }
+  .cat {
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: var(--surface-container);
+    font-weight: 500;
+  }
+  .cat.on {
+    background: var(--primary);
+    color: #fff;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .item {
+    display: grid;
+    gap: 2px;
+    padding: 8px;
+    border-radius: var(--r);
+    border: 1px solid var(--border);
+  }
+  .thumb {
+    display: grid;
+    place-items: center;
+    height: 56px;
+    margin-bottom: 6px;
+    border-radius: 6px;
+    background: var(--surface-container);
+    color: var(--primary);
+  }
+  .clip {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+  }
+  .price {
+    color: var(--primary);
+    font-weight: 700;
+  }
+  .plus {
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    background: var(--primary);
+    color: #fff;
+    font-weight: 700;
+  }
+  .cart {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: var(--r);
+    background: var(--primary);
+    color: #fff;
+    font-weight: 600;
+  }
+  .count {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.2);
+  }
+  .view {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+  }
+
+  .small-title {
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .hero-img {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 132px;
+    border-radius: var(--r-md);
+    background: var(--primary-soft);
+    color: var(--primary);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary) 15%, transparent);
+  }
+  .stock {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--primary);
+    font-size: 8.5px;
+    font-weight: 700;
+  }
+  .title-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .name {
+    font-size: 12.5px;
+    font-weight: 700;
+  }
+  .big-price {
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .facts div {
+    display: grid;
+    padding: 6px;
+    border-radius: 6px;
+    background: var(--surface-container);
+    text-align: center;
+  }
+  .facts span {
+    font-size: 7.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+  .dispatch {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .qty {
+    display: flex;
+    justify-content: space-between;
+    color: var(--text-2);
+  }
+  .change {
+    color: var(--primary);
+    font-weight: 600;
+  }
+  .pay {
+    padding: 10px;
+    border-radius: var(--r);
+    background: #000;
+    color: #fff;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  .tracking {
+    padding: 0;
+    background: #e5e7eb;
+  }
+  .map {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgb(255 255 255 / 0.35) 1px, transparent 1px) 0 0 / 28px 28px,
+      linear-gradient(rgb(255 255 255 / 0.35) 1px, transparent 1px) 0 0 / 28px 28px,
+      #e2e5e9;
+  }
+  .map svg {
+    width: 100%;
+    height: 100%;
+  }
+  .route {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 3;
+    stroke-dasharray: 2 6;
+    stroke-linecap: round;
+  }
+  .pin {
+    position: absolute;
+    left: 62%;
+    top: 16%;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #c81e1e;
+    box-shadow: 0 0 0 3px rgb(255 255 255 / 0.8);
+  }
+  .courier {
+    position: absolute;
+    left: 43%;
+    top: 46%;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 0 6px color-mix(in srgb, #10b981 30%, transparent);
+  }
+  /* The courier pulses only while its screen is the active preview. */
+  :global([data-screen].is-active) .courier {
+    animation: courier 2.4s ease-in-out infinite;
+  }
+  @keyframes courier {
+    50% {
+      box-shadow: 0 0 0 10px color-mix(in srgb, #10b981 10%, transparent);
+    }
+  }
+  .eta,
+  .driver {
+    position: relative;
+    margin: 10px 10px 0;
+    padding: 10px;
+    border-radius: var(--r);
+    background: var(--surface);
+    box-shadow: var(--shadow-md);
+  }
+  .driver {
+    margin-bottom: 10px;
+  }
+  .eta-top {
+    display: flex;
+    justify-content: space-between;
+  }
+  .gps {
+    color: var(--primary);
+    font-size: 9px;
+    font-weight: 600;
+  }
+  .id {
+    font: 500 9px var(--font-mono);
+    color: var(--text-2);
+  }
+  .eta-main {
+    margin-top: 2px;
+    font-size: 12.5px;
+    font-weight: 700;
+  }
+  .driver-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .avatar {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--surface-container);
+    font-weight: 700;
+  }
+  .driver-who {
+    flex: 1;
+  }
+  .driver-who .sub {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .driver-who :global(.icon) {
+    color: #f59e0b;
+  }
+  .progress {
+    height: 4px;
+    margin: 10px 0 6px;
+    border-radius: 9999px;
+    background: var(--surface-container);
+    overflow: hidden;
+  }
+  .progress span {
+    display: block;
+    width: 70%;
+    height: 100%;
+    background: var(--primary);
+  }
+  .progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8.5px;
+    color: var(--text-2);
+  }
+  .out {
+    color: var(--primary);
+    font-weight: 600;
+  }
+</style>

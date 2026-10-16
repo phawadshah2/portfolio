@@ -1,0 +1,134 @@
+# Home page copy, taken verbatim from the Stitch design.
+#
+# DRAFT: this is the design's SAMPLE content (placeholder numbers, employers,
+# testimonials and contact details). While `draft: true` is set anywhere in
+# src/content, the site shows a "Draft preview" banner and CI refuses to
+# deploy main. Replace with real data, then delete the `draft` lines.
+- id: home
+  draft: true
+
+  hero:
+    badge: Open to full-time roles & freelance projects
+    # One entry per line; each line reveals separately.
+    headline:
+      - Senior Flutter Engineer.
+      - I build complete apps,
+      - from design to launch.
+    intro: >-
+      5 years shipping production iOS and Android apps. I design, build, and
+      launch mobile and web products end to end, faster with an AI-accelerated
+      workflow.
+    primaryCta: { label: View my work, href: '/#work' }
+    secondaryCta: { label: Start a project, href: '/#contact' }
+    trust:
+      - { icon: globe, label: Available for UAE/Gulf & Global contracts }
+      - { icon: verified, label: 100% Production Ready Code }
+
+  metrics:
+    - { value: 5+ Years, label: Dedicated Flutter & Dart }
+    - { value: 14+ Apps, label: Shipped to production, accent: true }
+    - { value: iOS · Android, label: Unified cross-platform }
+    - { value: 500K+, label: Store downloads, accent: true }
+
+  work:
+    eyebrow: Engineered with Precision
+    title: Featured Case Studies
+    intro: >-
+      A selection of real-world mobile platforms engineered for speed, high
+      conversion, and rock-solid state management.
+
+  services:
+    eyebrow: Capabilities & Scope
+    title: Services for High-Growth Startups & UAE Enterprises
+    intro: >-
+      End-to-end engineering excellence. From early napkin wireframes to
+      resilient, production-ready cross-platform engines.
+    items:
+      - icon: phone
+        title: Mobile Apps (Flutter)
+        body: >-
+          Native-grade iOS & Android performance from a single scalable Dart
+          codebase. Fluid 60/120 FPS animations, reactive state architectures,
+          and platform channels.
+      - icon: desktop
+        title: Web Apps
+        body: >-
+          Responsive, SEO-ready Flutter Web and modern web applications with
+          optimized canvas renderers, rapid DOM initial paint, and
+          cross-browser stability.
+      - icon: design
+        title: UI/UX Design
+        body: >-
+          Figma prototypes, cohesive design systems, micro-interactions, and
+          accessible UI designed directly with implementation mechanics in mind.
+      - icon: database
+        title: Backend & APIs
+        body: >-
+          Scalable REST/GraphQL endpoints, Firebase/Supabase setups, secure
+          OAuth/JWT authentication, and highly optimized database schemas.
+      - icon: rocket
+        title: App Store Launch & Maintenance
+        wide: true
+        body: >-
+          End-to-end App Store & Google Play compliance, automated Fastlane
+          CI/CD pipelines, crash-reporting telemetry (Sentry/Firebase), and
+          rapid iterative patch cycles.
+
+  process:
+    badge: AI-Accelerated Workflow — 2x Faster Delivery
+    title: How I Work
+    steps:
+      - { icon: search, title: Discover, body: 'Scope, product architecture, and technical feasibility analysis.' }
+      - { icon: pen, title: Design, body: 'Interactive Figma wireframes, reusable UI kits, and clickable flows.' }
+      - { icon: code, title: Build, body: 'Production-grade Flutter code, clean state management, and robust APIs.' }
+      - { icon: upload, title: Launch, body: 'Store listings, compliance verification, and test flight release.' }
+      - { icon: support, title: Support, body: 'Monitoring, analytics, crash-reporting, and continuous feature iteration.' }
+
+  stack:
+    eyebrow: Architecture & Tooling
+    title: Curated Technical Stack
+    groups:
+      - name: Mobile Core
+        primary: true
+        chips: [Flutter (Core), Dart, Riverpod, Bloc, Swift/Kotlin Interop]
+      - name: Web
+        chips: [Flutter Web, TypeScript, Tailwind CSS, Next.js]
+      - name: Backend & Cloud
+        chips: [Firebase, Supabase, Node.js, FastAPI, PostgreSQL, Docker]
+      - name: Tools & Workflow
+        chips: [Git, GitHub Actions (CI/CD), Figma, Claude / Cursor AI, Fastlane, Postman]
+
+  experience:
+    eyebrow: Track Record
+    title: Professional Experience
+
+  testimonials:
+    eyebrow: Client Feedback
+    title: Words from Engineering Leaders
+    items:
+      - quote: >-
+          Fawad is that rare engineer who doesn't just write clean code — he
+          understands product vision and delivered our UAE retail app 3 weeks
+          ahead of schedule.
+        name: Tariq Al-Mansoor
+        role: Head of Product at RetailTech Dubai
+      - quote: >-
+          Having one person handle the UI design, backend integration, and App
+          Store approval was a game changer for our seed-stage startup.
+        name: Elena Rostova
+        role: Founder & CEO at Cadence App
+
+  contact:
+    eyebrow: Get In Touch
+    title: Let's build your next flagship product.
+    body: >-
+      Based in Dubai, UAE — working with clients worldwide. Available for
+      full-time technical leadership or high-impact contract development.
+    email: fawad@example.com
+    whatsapp: +971 50 123 4567
+    response: Within 12 hours guaranteed
+    projectTypes:
+      - Full-time Senior Role
+      - End-to-End App Development
+      - MVP / Fast Prototype
+      - Flutter Code Audit & Consulting

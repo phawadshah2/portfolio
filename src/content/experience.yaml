@@ -1,45 +1,34 @@
-# Newest first (lower `order` comes first).
-- id: star-gallery-mart
+# DRAFT: sample timeline from the Stitch design (not real employers).
+# Your real history is in experience.real.yaml.
+- id: techvantage
+  draft: true
   order: 1
-  role: Senior Flutter Developer
-  company: Star Gallery Mart
-  location: Sharjah, UAE
-  period: May 2024 – Present
+  current: true
+  role: Senior Flutter Engineer
+  company: TechVantage Solutions
+  location: Dubai, UAE
+  period: 2022 — Present
   highlights:
-    - >-
-      Own the architecture and delivery of a cross-platform e-commerce app
-      serving 20K+ active users on the App Store and Google Play.
-    - >-
-      Shipped 12+ features with product, design and backend teams, including
-      secure checkout with Apple Pay, Google Pay, Stripe, Tabby and Tamara.
-    - >-
-      Cut startup time by 35% and memory usage by 25% through DevTools
-      profiling, image caching and lazy loading.
-  stack: [Flutter, GetX, MVVM, Platform Channels, GitHub Actions]
+    - Architected and scaled 6+ enterprise Flutter apps across fintech and logistics with 99.9% crash-free sessions.
+    - Implemented automated CI/CD reducing store release cycle from 4 days to 4 hours.
 
-- id: tritech-solutions
+- id: appcraft
+  draft: true
   order: 2
-  role: Flutter Developer
-  company: Tritech Solutions
-  location: Peshawar, Pakistan
-  period: Jan 2022 – Mar 2024
+  role: Lead Mobile Developer
+  company: AppCraft Studios
+  location: Remote
+  period: 2020 — 2022
   highlights:
-    - >-
-      Delivered 3 apps end to end for e-commerce and health-tech clients, from
-      requirements to App Store and Play Store release.
-    - >-
-      Introduced Clean Architecture and the Repository pattern, cutting
-      new-developer onboarding time by 50%.
-    - Mentored 2 junior developers through pairing and code review.
-  stack: [Flutter, Provider, BLoC, Firebase, Google Maps]
+    - Led a team of 4 engineers building cross-platform consumer apps, driving 300K+ downloads.
+    - Engineered offline-first local sync engine using Isar/Hive and WebSockets.
 
-- id: appspot
+- id: codespire
+  draft: true
   order: 3
-  role: Junior Flutter Developer
-  company: AppSpot
-  location: Peshawar, Pakistan
-  period: Feb 2021 – Nov 2021
+  role: Mobile Software Engineer
+  company: CodeSpire Technologies
+  period: 2019 — 2020
   highlights:
-    - Contributed to 5 product releases across consumer and enterprise apps.
-    - Built a shared widget library that sped up feature development by 30%.
-  stack: [Flutter, GetX, REST]
+    - Built custom animation-heavy Flutter widgets and custom platform channels.
+    - Migrated legacy native codebases to Flutter, lowering maintenance overhead by 45%.

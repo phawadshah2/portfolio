@@ -8,8 +8,8 @@ summary: >-
 tags: [BLoC, Drift / SQLite, Clean Architecture, GitHub Actions]
 platforms: [android, ios]
 kind: personal
-featured: true
-order: 1
+featured: false
+order: 10
 links:
   repo: https://github.com/phawadshah2/employee_book
 screenshots:

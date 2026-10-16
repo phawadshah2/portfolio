@@ -1,360 +1,686 @@
 ---
 import Button from '../components/Button.astro';
-import CopyEmail from '../components/CopyEmail.astro';
-import HeroShowcase from '../components/HeroShowcase.astro';
+import Icon from '../components/Icon.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import SectionHead from '../components/SectionHead.astro';
+import ContactForm from '../components/home/ContactForm.astro';
+import HeroStage from '../components/home/HeroStage.astro';
+import Timeline from '../components/home/Timeline.astro';
 import Base from '../layouts/Base.astro';
-import { getExperience, getProfile, getProjects, getSkills, projectPath } from '../lib/content';
+import { getExperience, getHome, getProfile, getProjects } from '../lib/content';
 
+const home = await getHome();
 const profile = await getProfile();
 const experience = await getExperience();
-const skills = await getSkills();
-const projects = await getProjects();
-const featured = projects.filter((p) => p.data.featured);
-const shown = featured.length > 0 ? featured : projects.slice(0, 3);
-const lead = shown[0];
+const projects = (await getProjects()).filter((p) => p.data.featured);
+const { hero, metrics, work, services, process, stack, testimonials, contact } = home;
+const whatsappHref = contact.whatsapp ? `https://wa.me/${contact.whatsapp.replace(/\D/g, '')}` : undefined;
+// Hero reveal order: headline lines, paragraph, then badge + CTAs together.
+const afterHeadline = hero.headline.length;
 ---
 
 <Base>
   <!-- Hero -->
-  <section class="hero">
-    <div class="container hero-grid">
+  <section class="hero container">
+    <div class="hero-grid">
       <div class="hero-text">
-        <p class="badge" data-reveal style="--d: 0; --reveal-offset: 16px">
-          <span class="dot" aria-hidden="true"></span>
-          {profile.availability} · {profile.location}
+        <p class="badge pill pill-primary" data-reveal style={`--d: ${afterHeadline + 1}`}>
+          <span class="ping" aria-hidden="true"></span>
+          {hero.badge}
         </p>
-        <p class="eyebrow" data-reveal style="--d: 1; --reveal-offset: 16px">
-          {profile.name} — {profile.role}
-        </p>
-        <h1 class="hero-title" data-reveal style="--d: 2; --reveal-offset: 16px">
-          {profile.headline}
+        <h1 class="t-hero headline">
+          {
+            hero.headline.map((line, i) => (
+              <span class="line" data-reveal style={`--d: ${i}; --rise: 20px; --dur: 620ms; --stagger: 95ms`}>
+                {line}{' '}
+              </span>
+            ))
+          }
         </h1>
-        <p class="lead" data-reveal style="--d: 3; --reveal-offset: 16px">{profile.intro}</p>
-        <div class="cta" data-reveal style="--d: 4; --reveal-offset: 16px">
-          {lead && <Button href={projectPath(lead)} icon="arrow-right">Read the case study</Button>}
-          <Button href={profile.cv} variant="secondary" icon="download" download>Download CV</Button>
-          <Button href="#contact" variant="text">Get in touch</Button>
+        <p class="t-body-lg intro" data-reveal style={`--d: ${afterHeadline}`}>{hero.intro}</p>
+        <div class="ctas" data-reveal style={`--d: ${afterHeadline + 1}`}>
+          <Button href={hero.primaryCta.href} icon="arrow-right">{hero.primaryCta.label}</Button>
+          <Button href={hero.secondaryCta.href} variant="outline">{hero.secondaryCta.label}</Button>
         </div>
+        {
+          hero.trust.length > 0 && (
+            <ul class="trust" data-reveal style={`--d: ${afterHeadline + 2}`}>
+              {hero.trust.map((t) => (
+                <li>
+                  <Icon name={t.icon} size={18} />
+                  {t.label}
+                </li>
+              ))}
+            </ul>
+          )
+        }
       </div>
-      <HeroShowcase shots={profile.showcase} />
+      <HeroStage />
     </div>
   </section>
 
-  <!-- About -->
-  <section class="section" aria-labelledby="about-title">
-    <div class="container">
-      <SectionHead
-        eyebrow="About"
-        title="Production apps, real users, measurable results."
-        id="about-title"
-      />
-      <div class="about">
-        <div class="about-text" data-reveal>
-          {profile.about.map((p) => <p class="lead">{p}</p>)}
-        </div>
-        <dl class="stats">
-          {
-            profile.stats.map((s, i) => (
-              <div class="card stat" data-reveal style={`--d: ${i}`}>
-                <dt class="muted">{s.label}</dt>
-                <dd class="stat-value" data-count={s.value}>{s.value}</dd>
-              </div>
-            ))
-          }
-        </dl>
-      </div>
-    </div>
+  <!-- Metrics -->
+  <section class="container metrics-wrap" aria-label="At a glance">
+    <dl class="metrics surface-card" data-reveal style="--rise: 12px">
+      {
+        metrics.map((m) => (
+          <div class="metric">
+            <dt class="t-label-sm metric-label">{m.label}</dt>
+            <dd class:list={['metric-value', { accent: m.accent }]} data-count={m.value}>
+              {m.value}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
   </section>
 
   <!-- Work -->
-  <section class="section" id="work" aria-labelledby="work-title">
-    <div class="container">
-      <SectionHead eyebrow="Selected work" title="Case studies" id="work-title" />
-      <div class="work">
-        {shown.map((p, i) => <ProjectCard project={p} wide={i === 0} delay={i} />)}
+  <section class="section container" id="work" aria-labelledby="work-title">
+    <div class="split-head">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow">{work.eyebrow}</span>
+        <h2 class="t-headline-lg" id="work-title">{work.title}</h2>
       </div>
+      <p class="split-intro" data-reveal style="--d: 1">{work.intro}</p>
+    </div>
+    <ol class="projects">
+      {projects.map((p, i) => <ProjectCard project={p} index={i} />)}
+    </ol>
+  </section>
+
+  <!-- Services -->
+  <section class="section container" id="services" aria-labelledby="services-title">
+    <div class="section-head narrow">
+      <span class="eyebrow" data-reveal>{services.eyebrow}</span>
+      <h2 class="t-headline-lg" id="services-title" data-reveal style="--d: 1">{services.title}</h2>
+      <p class="t-body-lg" data-reveal style="--d: 2">{services.intro}</p>
+    </div>
+    <ul class="services">
       {
-        projects.length > shown.length && (
-          <div class="all-projects" data-reveal>
-            <Button href="/projects" variant="secondary" icon="arrow-right">
-              All {projects.length} projects
-            </Button>
-          </div>
-        )
+        services.items.map((s, i) => (
+          <li class:list={['surface-card service', { wide: s.wide }]} data-reveal style={`--d: ${i % 3}`}>
+            <span class="icon-tile">
+              <Icon name={s.icon} size={22} />
+            </span>
+            <h3 class="t-headline-sm">{s.title}</h3>
+            <p class="service-body">{s.body}</p>
+          </li>
+        ))
       }
+    </ul>
+  </section>
+
+  <!-- How I work -->
+  <section class="section container" aria-labelledby="process-title">
+    <div class="section-head centered">
+      <p class="pill pill-primary process-badge" data-reveal>
+        <Icon name="bolt" size={14} />
+        {process.badge}
+      </p>
+      <h2 class="t-headline-lg" id="process-title" data-reveal style="--d: 1">{process.title}</h2>
+    </div>
+    <ol class="steps">
+      {
+        process.steps.map((s, i) => (
+          <li class="surface-card step" data-reveal style={`--d: ${i}`}>
+            <div class="step-top">
+              <span class="step-num">{String(i + 1).padStart(2, '0')}</span>
+              <Icon name={s.icon} size={20} class="step-icon" />
+            </div>
+            <h3 class="step-title">{s.title}</h3>
+            <p class="step-body">{s.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <!-- Stack -->
+  <section class="section container" aria-labelledby="stack-title">
+    <div class="surface-card stack" data-reveal="mask">
+      <div class="section-head">
+        <span class="eyebrow" data-reveal>{stack.eyebrow}</span>
+        <h2 class="t-headline-lg" id="stack-title" data-reveal style="--d: 1">{stack.title}</h2>
+      </div>
+      <ul class="stack-rows">
+        {
+          stack.groups.map((g, i) => (
+            <li class="stack-row" data-reveal style={`--d: ${i + 1}`}>
+              <span class:list={['stack-name', { primary: g.primary }]}>{g.name}</span>
+              <ul class="chips">
+                {g.chips.map((c, j) => (
+                  <li class:list={['chip', { 'chip-primary': g.primary && j === 0 }]}>{c}</li>
+                ))}
+              </ul>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 
   <!-- Experience -->
-  <section class="section" id="experience" aria-labelledby="experience-title">
-    <div class="container">
-      <SectionHead eyebrow="Experience" title="Where I have shipped" id="experience-title" />
-      <ol class="timeline">
-        {
-          experience.map((e) => (
-            <li class="job" data-reveal>
-              <p class="period eyebrow">{e.period}</p>
-              <div>
-                <h3 class="title">{e.role}</h3>
-                <p class="company">
-                  {e.company} · {e.location}
-                </p>
-                <ul class="highlights">
-                  {e.highlights.map((h) => <li>{h}</li>)}
-                </ul>
-                <ul class="tags" aria-label="Stack">
-                  {e.stack.map((t) => <li>{t}</li>)}
-                </ul>
+  <section class="section container" id="about" aria-labelledby="experience-title">
+    <div class="section-head">
+      <span class="eyebrow" data-reveal>{home.experience.eyebrow}</span>
+      <h2 class="t-headline-lg" id="experience-title" data-reveal style="--d: 1">{home.experience.title}</h2>
+    </div>
+    <Timeline entries={experience} />
+  </section>
+
+  <!-- Testimonials -->
+  {
+    testimonials.items.length > 0 && (
+      <section class="section container" aria-labelledby="quotes-title">
+        <div class="section-head">
+          <span class="eyebrow" data-reveal>{testimonials.eyebrow}</span>
+          <h2 class="t-headline-lg" id="quotes-title" data-reveal style="--d: 1">
+            {testimonials.title}
+          </h2>
+        </div>
+        <ul class="quotes">
+          {testimonials.items.map((t, i) => (
+            <li class="surface-card quote" data-reveal style={`--d: ${i}`}>
+              <Icon name="quote" size={28} class="quote-mark" />
+              <blockquote>“{t.quote}”</blockquote>
+              <div class="who">
+                <p class="who-name">{t.name}</p>
+                <p class="who-role">{t.role}</p>
               </div>
             </li>
-          ))
-        }
-      </ol>
-    </div>
-  </section>
-
-  <!-- Skills -->
-  <section class="section" id="skills" aria-labelledby="skills-title">
-    <div class="container">
-      <SectionHead eyebrow="Skills" title="The toolbox" id="skills-title" />
-      <div class="grid">
-        {
-          skills.map((g, i) => (
-            <div class="card" data-reveal style={`--d: ${i % 3}`}>
-              <h3 class="skill-title">{g.title}</h3>
-              <ul class="tags">
-                {g.skills.map((s) => <li>{s}</li>)}
-              </ul>
-            </div>
-          ))
-        }
-      </div>
-    </div>
-  </section>
+          ))}
+        </ul>
+      </section>
+    )
+  }
 
   <!-- Contact -->
-  <section class="section" id="contact" aria-labelledby="contact-title">
-    <div class="container">
-      <div class="contact" data-reveal>
-        <p class="eyebrow">Contact</p>
-        <h2 class="display-l" id="contact-title">Hiring for a Flutter role? Let’s talk.</h2>
-        <p class="lead">
-          {profile.availability}. Based in {profile.location}. Email is the fastest way to reach me.
-        </p>
-        <div class="contact-actions">
-          <Button href={`mailto:${profile.email}`} icon="mail">{profile.email}</Button>
-          <CopyEmail email={profile.email} />
-        </div>
-        <div class="contact-links">
-          <Button href={profile.linkedin} variant="text" icon="arrow-up-right" external>LinkedIn</Button>
-          <Button href={profile.github} variant="text" icon="arrow-up-right" external>GitHub</Button>
-          <Button href={profile.cv} variant="text" icon="download" download>Download CV</Button>
+  <section class="section container" id="contact" aria-labelledby="contact-title">
+    <div class="surface-card contact" data-reveal style="--rise: 20px">
+      <div class="contact-info">
+        <span class="eyebrow">{contact.eyebrow}</span>
+        <h2 class="t-headline-lg" id="contact-title">{contact.title}</h2>
+        <p class="contact-body">{contact.body}</p>
+        <ul class="channels">
+          <li>
+            <span class="channel-icon"><Icon name="mail" size={20} /></span>
+            <div>
+              <p class="channel-label">Direct Email</p>
+              <a class="channel-value" href={`mailto:${contact.email}`}>{contact.email}</a>
+            </div>
+          </li>
+          {
+            contact.whatsapp && (
+              <li>
+                <span class="channel-icon"><Icon name="chat" size={20} /></span>
+                <div>
+                  <p class="channel-label">WhatsApp / Telegram</p>
+                  <a class="channel-value" href={whatsappHref} target="_blank" rel="noopener noreferrer">
+                    {contact.whatsapp}
+                  </a>
+                </div>
+              </li>
+            )
+          }
+          {
+            contact.response && (
+              <li>
+                <span class="channel-icon"><Icon name="clock" size={20} /></span>
+                <div>
+                  <p class="channel-label">Response Time</p>
+                  <p class="channel-value accent">{contact.response}</p>
+                </div>
+              </li>
+            )
+          }
+        </ul>
+        <div class="socials">
+          <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile">
+            <Icon name="id-card" size={20} />
+          </a>
+          <a href={profile.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub profile">
+            <Icon name="code" size={20} />
+          </a>
         </div>
       </div>
+      <ContactForm email={contact.email} projectTypes={contact.projectTypes} />
     </div>
   </section>
 </Base>
 
 <style>
+  /* ----- Hero ----- */
   .hero {
-    background: radial-gradient(
-      ellipse 80% 70% at 95% -10%,
-      var(--accent-soft),
-      transparent 70%
-    );
+    padding-block: 48px 64px;
+  }
+  @media (min-width: 1024px) {
+    .hero {
+      padding-block: 96px;
+    }
   }
   .hero-grid {
     display: grid;
-    gap: clamp(40px, 6vw, 64px);
+    gap: 48px;
     align-items: center;
-    padding-block: clamp(48px, 9vw, 112px) clamp(48px, 7vw, 96px);
+  }
+  @media (min-width: 1024px) {
+    .hero-grid {
+      grid-template-columns: 7fr 5fr;
+      gap: 32px;
+    }
   }
   .hero-text {
     display: grid;
-    gap: 20px;
     justify-items: start;
-    max-width: 760px;
-  }
-  .hero-title {
-    font-size: clamp(2.5rem, 5.5vw + 0.4rem, 4rem);
-    line-height: 1.04;
-    letter-spacing: -0.03em;
-  }
-  @media (min-width: 1080px) {
-    .hero-grid {
-      /* Text a touch wider than the showcase; the cards overhang the gap. */
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-    }
-    .hero-title {
-      font-size: clamp(2.75rem, 3.6vw + 0.5rem, 4rem);
-    }
   }
   .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
+    margin-bottom: 24px;
     padding: 6px 14px;
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    background: var(--surface);
-    color: var(--text-2);
-    font-size: 0.8125rem;
-    font-weight: 500;
   }
-  .dot {
-    width: 8px;
-    height: 8px;
+  .ping {
+    position: relative;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
-    background: var(--success);
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--success) 50%, transparent);
-    animation: pulse 2.4s var(--ease-out) infinite;
+    background: var(--primary);
   }
-  @keyframes pulse {
-    70% {
-      box-shadow: 0 0 0 8px transparent;
+  .ping::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--primary);
+    animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+  @keyframes ping {
+    75%,
+    100% {
+      transform: scale(2.2);
+      opacity: 0;
     }
   }
-  .cta {
+  .headline {
+    margin-bottom: 24px;
+  }
+  .headline .line {
+    display: block;
+  }
+  .intro {
+    max-width: 42rem;
+    margin-bottom: 32px;
+  }
+  .ctas {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 16px;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  @media (max-width: 639px) {
+    .ctas {
+      display: grid;
+      width: 100%;
+      gap: 12px;
+    }
+  }
+  .trust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    width: 100%;
+    padding-top: 24px;
+    border-top: 1px solid #e2e2e4;
+    color: var(--text-2);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .trust li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .trust :global(.icon) {
+    color: var(--primary);
   }
 
-  .about {
-    display: grid;
-    gap: 40px;
+  /* ----- Metrics ----- */
+  .metrics-wrap {
+    margin-bottom: 32px;
   }
-  .about-text {
-    display: grid;
-    gap: 20px;
-  }
-  .stats {
+  .metrics {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
     margin: 0;
-    align-content: start;
+    padding: 24px;
   }
-  .stat {
+  .metric {
     display: flex;
     flex-direction: column-reverse;
     justify-content: flex-end;
     gap: 4px;
-    padding: 20px;
   }
-  .stat dt {
-    font-size: 0.875rem;
-  }
-  .stat dd {
+  .metric-value {
     margin: 0;
+    font-size: 28px;
+    line-height: 36px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
   }
-  @media (min-width: 1080px) {
-    .about {
-      grid-template-columns: 3fr 2fr;
-      gap: 64px;
-    }
+  .metric-value.accent {
+    color: var(--primary);
   }
-
-  .work {
-    display: grid;
-    gap: 20px;
-  }
-  @media (min-width: 700px) {
-    .work {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    .work > :global(.wide) {
-      grid-column: 1 / -1;
-    }
-  }
-  .all-projects {
-    margin-top: 32px;
-  }
-
-  .timeline {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .job {
-    display: grid;
-    gap: 8px;
-    padding-block: 40px;
-    border-bottom: 1px solid var(--border);
-  }
-  .job:first-child {
-    padding-top: 0;
-  }
-  .job:last-child {
-    border-bottom: 0;
-  }
-  .period {
+  .metric-label {
     color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
-  .company {
-    margin: 4px 0 16px;
-    color: var(--accent);
-  }
-  .highlights {
-    display: grid;
-    gap: 10px;
-    margin: 0 0 20px;
-    padding-left: 20px;
-    color: var(--text-2);
-  }
-  .highlights li::marker {
-    color: var(--text-muted);
-  }
-  @media (min-width: 700px) {
-    .job {
-      grid-template-columns: 220px 1fr;
+  @media (min-width: 1024px) {
+    .metrics {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      padding: 32px;
     }
-    .period {
-      padding-top: 6px;
+    .metric {
+      padding-inline: 24px;
+      border-left: 1px solid #e2e2e4;
+    }
+    .metric:first-child {
+      padding-left: 0;
+      border-left: 0;
+    }
+    .metric-value {
+      font-size: 36px;
+      line-height: 44px;
     }
   }
 
-  .skill-title {
-    margin-bottom: 16px;
-    font-family: var(--font-body);
-    font-size: 1.0625rem;
-    font-weight: 600;
-  }
-
-  .contact {
+  /* ----- Shared section heads ----- */
+  .split-head {
     display: grid;
     gap: 16px;
-    justify-items: start;
-    padding: clamp(28px, 6vw, 64px);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    background: var(--accent-soft);
+    margin-bottom: 48px;
   }
-  .contact .lead {
-    max-width: 640px;
+  .split-head .section-head {
+    margin-bottom: 0;
   }
-  .contact-actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+  .split-intro {
+    max-width: 30rem;
+    color: var(--text-2);
+  }
+  @media (min-width: 768px) {
+    .split-head {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+    }
+  }
+  .narrow {
+    max-width: 48rem;
+  }
+  .centered {
+    justify-items: center;
+    text-align: center;
+  }
+
+  /* ----- Work ----- */
+  .projects {
+    display: grid;
+    gap: 32px;
+  }
+
+  /* ----- Services ----- */
+  .services {
+    display: grid;
+    gap: 24px;
+  }
+  @media (min-width: 768px) {
+    .services {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .services {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .service.wide {
+      grid-column: span 2;
+    }
+  }
+  .service {
+    display: grid;
+    align-content: start;
+    gap: 16px;
+    padding: 28px;
+    transition:
+      border-color var(--t-return) var(--ease-out),
+      box-shadow var(--t-return) var(--ease-out),
+      translate var(--t-return) var(--ease-out);
+  }
+  @media (hover: hover) {
+    .service:hover {
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-md);
+      translate: 0 -2px;
+      transition-duration: var(--t-hover);
+    }
+  }
+  .service .icon-tile {
+    margin-bottom: 8px;
+  }
+  .service-body {
+    color: var(--text-2);
+    font-size: 14px;
+    line-height: 23px;
+  }
+
+  /* ----- Process ----- */
+  .process-badge {
+    margin-bottom: 8px;
+  }
+  .steps {
+    display: grid;
+    gap: 16px;
+  }
+  @media (min-width: 768px) {
+    .steps {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .steps {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+  .step {
+    display: grid;
+    align-content: start;
     gap: 8px;
-    max-width: 100%;
+    padding: 20px;
+  }
+  .step-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .step-num {
+    color: var(--primary);
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .step :global(.step-icon) {
+    color: #9ca3af;
+    transition: color var(--t-hover) var(--ease-out);
+  }
+  .step:hover :global(.step-icon) {
+    color: var(--primary);
+  }
+  .step-title {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .step-body {
+    color: var(--text-2);
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  /* ----- Stack ----- */
+  .stack {
+    padding: 28px;
+  }
+  @media (min-width: 1024px) {
+    .stack {
+      padding: 48px;
+    }
+  }
+  .stack-rows {
+    display: grid;
+    gap: 16px;
+  }
+  .stack-row {
+    display: grid;
+    gap: 12px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    background: #f9f9fb;
+  }
+  @media (min-width: 768px) {
+    .stack-row {
+      grid-template-columns: 180px 1fr;
+      align-items: center;
+    }
+  }
+  .stack-name {
+    justify-self: start;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .stack-name.primary {
+    padding: 3px 10px;
+    border-radius: var(--r-sm);
+    background: var(--primary);
+    color: #fff;
+    font-size: 13px;
+  }
+
+  /* ----- Testimonials ----- */
+  .quotes {
+    display: grid;
+    gap: 24px;
+  }
+  @media (min-width: 768px) {
+    .quotes {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  .quote {
+    display: grid;
+    align-content: start;
+    gap: 16px;
+    padding: 32px;
+  }
+  .quote :global(.quote-mark) {
+    color: var(--primary);
+  }
+  blockquote {
+    margin: 0;
+    font-size: 18px;
+    line-height: 29px;
+    font-style: italic;
+  }
+  .who {
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .who-name {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .who-role {
+    color: var(--text-2);
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  /* ----- Contact ----- */
+  .contact {
+    display: grid;
+    gap: 40px;
+    padding: 28px;
+  }
+  @media (min-width: 1024px) {
+    .contact {
+      grid-template-columns: 1fr 1.1fr;
+      gap: 56px;
+      padding: 56px;
+    }
+  }
+  .contact-info {
+    display: grid;
+    align-content: start;
+    gap: 16px;
+  }
+  .contact-body {
+    color: var(--text-2);
+  }
+  .channels {
+    display: grid;
+    gap: 16px;
     margin-top: 16px;
   }
-  .contact-actions :global(.btn-primary) {
-    max-width: 100%;
-  }
-  .contact-actions :global(.btn-primary span) {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .contact-links {
+  .channels li {
     display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-left: -12px;
+    align-items: center;
+    gap: 12px;
+  }
+  .channel-icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--r);
+    background: var(--surface-container);
+    color: var(--primary);
+  }
+  .channel-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-2);
+  }
+  .channel-value {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  a.channel-value:hover {
+    color: var(--primary);
+  }
+  .channel-value.accent {
+    color: var(--primary);
+  }
+  .socials {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .socials a {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 46px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r);
+    transition:
+      border-color var(--t-hover) var(--ease-out),
+      color var(--t-hover) var(--ease-out),
+      transform var(--t-press) var(--ease-out);
+  }
+  .socials a:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+  .socials a:active {
+    transform: scale(0.95);
   }
 </style>

@@ -1,39 +1,87 @@
 ---
+import { url } from '../lib/paths';
+
 interface Props {
   name: string;
+  email: string;
+  whatsapp?: string;
+  linkedin: string;
+  github: string;
 }
-const { name } = Astro.props;
+const { name, email, whatsapp, linkedin, github } = Astro.props;
 const year = new Date().getFullYear();
+const wa = whatsapp ? `https://wa.me/${whatsapp.replace(/\D/g, '')}` : undefined;
+
+const links = [
+  { href: url('/#work'), label: 'Work' },
+  { href: url('/#services'), label: 'Services' },
+  { href: url('/#about'), label: 'About' },
+  { href: url('/#contact'), label: 'Contact' },
+  { href: `mailto:${email}`, label: 'Email' },
+  ...(wa ? [{ href: wa, label: 'WhatsApp', external: true }] : []),
+  { href: linkedin, label: 'LinkedIn', external: true },
+  { href: github, label: 'GitHub', external: true },
+];
 ---
 
 <footer class="footer">
-  <div class="container footer-inner">
-    <p>© {year} {name}</p>
-    <p>
-      Built with Astro. Flutter demos run inside it ·
-      <a href="https://github.com/phawadshah2/portfolio" target="_blank" rel="noopener noreferrer"
-        >View source</a
-      >
-    </p>
+  <div class="container inner">
+    <p class="copy">© {year} {name}. All rights reserved. Senior Flutter &amp; Product Engineer.</p>
+    <ul class="links">
+      {
+        links.map((l) => (
+          <li>
+            <a
+              href={l.href}
+              target={'external' in l ? '_blank' : undefined}
+              rel={'external' in l ? 'noopener noreferrer' : undefined}
+            >
+              {l.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
   </div>
 </footer>
 
 <style>
   .footer {
     border-top: 1px solid var(--border);
-    color: var(--text-muted);
-    font-size: 0.875rem;
+    background: var(--surface);
   }
-  .footer-inner {
+  .inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding-block: 40px;
+    text-align: center;
+  }
+  .copy {
+    color: var(--text-2);
+    font-size: 14px;
+  }
+  .links {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: center;
     gap: 8px 24px;
-    padding-block: 32px;
   }
-  a {
-    color: var(--accent);
-    text-decoration: underline;
-    text-underline-offset: 3px;
+  .links a {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-2);
+    transition: color var(--t-hover) var(--ease-out);
+  }
+  .links a:hover {
+    color: var(--primary);
+  }
+  @media (min-width: 1024px) {
+    .inner {
+      flex-direction: row;
+      justify-content: space-between;
+      text-align: left;
+    }
   }
 </style>

@@ -8,6 +8,26 @@ Flutter web builds of my apps embedded as live demos.
 > for instant first paint, SEO, and cheap animation, so Flutter now powers the
 > demos instead of the page shell.
 
+## ⚠️ Draft content (Stitch redesign)
+
+The current design came from a Stitch mock-up, and so did its copy: the
+employers, numbers, testimonials, the Aura Market / Cadence / BreatheFree
+projects and the contact details are **sample content**, marked `draft: true`.
+
+While any draft remains:
+- every page shows a **"Draft preview" banner** and carries `noindex`;
+- CI **refuses to deploy `main`** (`npm run check:drafts` lists the files).
+
+To go live, replace the sample content with real data:
+- `src/content/home.yaml`: hero, metrics, services, process, stack, testimonials, contact
+- `src/content/experience.yaml`: your real history is in `experience.real.yaml`
+- `src/content/projects/*.md`: real projects (`employee-book.md` is real)
+- `src/pages/projects/aura-market.astro`: sample case study; delete it or rewrite it
+
+then delete the `draft: true` lines (and the `DRAFT:` header comment in
+`aura-market.astro`). `skills.real.yaml` keeps your real skill groups for the
+stack section.
+
 ## Editing content (no code needed)
 
 All copy lives in `src/content/` and is validated at build time. A typo or a
@@ -15,9 +35,9 @@ missing field fails the build with a message pointing at the file.
 
 | File | What it holds |
 |---|---|
-| `profile.yaml` | Name, headline, intro, about, contact links, CV path, stats |
-| `experience.yaml` | Jobs, newest first (`order`) |
-| `skills.yaml` | Skill groups |
+| `profile.yaml` | Name, role, links, CV path |
+| `home.yaml` | Every home-page section (hero, metrics, services, process, stack, testimonials, contact) |
+| `experience.yaml` | Jobs, newest first (`order`); `current: true` highlights the marker |
 | `projects/<slug>.md` | One file per project. The file name is the URL: `/projects/<slug>` |
 
 ### Adding a project
@@ -67,14 +87,21 @@ npm run preview    # serve dist/ locally
 ## How it is built
 
 - **Pages:** `src/pages` (home, `/projects`, `/projects/<slug>`, 404).
-- **Motion:** CSS opacity/transform transitions only (no layout work per
-  frame). One `IntersectionObserver` reveals content on scroll
-  (`src/scripts/motion.ts`); stat numbers count up; pages cross-fade with the
-  browser's View Transitions. `prefers-reduced-motion` turns all of it off.
-- **Theme:** light/dark follows the OS until the visitor toggles it; the choice
-  is applied before first paint, so there is no flash.
-- **Fonts:** Inter, Space Grotesk and JetBrains Mono, self-hosted as Latin
-  subset WOFF2 (~128 KB total, no third-party requests).
+- **Design system:** "Engineering Craft" (Stitch `DESIGN.md`): emerald on
+  light neutrals, Inter, hairline borders; tokens in `src/styles/global.css`.
+- **Motion** (`src/scripts/motion.ts`, all opacity/transform/clip-path, each
+  runs once per visit):
+  - Hero: headline lines, intro, badge + CTAs, then the phone (rise + scale),
+    background panels staggered, then the phone's UI builds in (`data-settle`).
+    Desktop pointer tilt (≤5°, interpolated) with depth parallax; 4px resting float.
+  - Scroll reveals (`data-reveal`, `data-reveal="mask"` for large panels).
+  - Count-ups (`data-count`, optional `data-count-start`) once in view.
+  - Timeline: line draws, markers pop as it reaches them, entries follow.
+  - Project cards: ≈2.5° 3D tilt, image scale, arrow nudge (desktop only).
+  - Aura Market preview: accessible tabs switch the phone screen (crossfade + slide).
+  - `prefers-reduced-motion` shows everything instantly.
+- **Fonts:** Inter and JetBrains Mono, self-hosted Latin-subset WOFF2.
+- **Icons:** inline SVG (`src/components/Icon.astro`), no icon font.
 - **SEO:** per-page title and description, Open Graph image, JSON-LD `Person`
   schema; canonical URLs and a sitemap once `SITE_URL` is set.
 

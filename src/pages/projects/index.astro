@@ -6,34 +6,27 @@ import { getProjects } from '../../lib/content';
 const projects = await getProjects();
 ---
 
-<Base title="Projects" description="Apps and case studies by Fawad Shah, with live demos where they run on the web.">
-  <section class="section">
-    <div class="container">
-      <div class="section-head" data-reveal>
-        <p class="eyebrow">Projects</p>
-        <h1 class="display-l">Everything I have built and written up</h1>
-        <p class="lead">
-          Personal apps and case studies. Projects with a live demo run right in the page.
-        </p>
-      </div>
-      <div class="list">
-        {projects.map((p, i) => <ProjectCard project={p} delay={i % 2} />)}
-      </div>
+<Base title="Projects" description="Apps and case studies by Fawad Shah.">
+  <section class="section container">
+    <div class="section-head">
+      <span class="eyebrow" data-reveal>Projects</span>
+      <h1 class="t-headline-lg" data-reveal style="--d: 1">All work</h1>
+      <p class="t-body-lg intro" data-reveal style="--d: 2">
+        Mobile platforms and case studies, with live demos where they run on the web.
+      </p>
     </div>
+    <ol class="list">
+      {projects.map((p, i) => <ProjectCard project={p} index={i} />)}
+    </ol>
   </section>
 </Base>
 
 <style>
-  .lead {
-    max-width: 640px;
+  .intro {
+    max-width: 40rem;
   }
   .list {
     display: grid;
-    gap: 20px;
-  }
-  @media (min-width: 700px) {
-    .list {
-      grid-template-columns: repeat(2, 1fr);
-    }
+    gap: 32px;
   }
 </style>

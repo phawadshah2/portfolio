@@ -8,6 +8,14 @@ import { z } from 'astro/zod';
  * shipping a broken page.
  */
 
+/**
+ * `draft: true` marks the Stitch design's sample content. While any draft is
+ * present the site shows a banner and CI will not deploy (scripts/check-drafts.mjs).
+ */
+const draft = z.boolean().default(false);
+
+const link = z.object({ label: z.string(), href: z.string() });
+
 const stat = z.object({
   value: z.string(),
   label: z.string(),
@@ -45,25 +53,82 @@ const profile = defineCollection({
     }),
 });
 
-const experience = defineCollection({
-  loader: file('src/content/experience.yaml'),
+const home = defineCollection({
+  loader: file('src/content/home.yaml'),
   schema: z.object({
-    role: z.string(),
-    company: z.string(),
-    location: z.string(),
-    period: z.string(),
-    order: z.number(),
-    highlights: z.array(z.string()).min(1),
-    stack: z.array(z.string()),
+    draft: draft,
+    hero: z.object({
+      badge: z.string(),
+      headline: z.array(z.string()).min(1),
+      intro: z.string(),
+      primaryCta: link,
+      secondaryCta: link,
+      trust: z.array(z.object({ icon: z.string(), label: z.string() })).default([]),
+    }),
+    metrics: z.array(
+      z.object({ value: z.string(), label: z.string(), accent: z.boolean().default(false) }),
+    ),
+    work: z.object({ eyebrow: z.string(), title: z.string(), intro: z.string() }),
+    services: z.object({
+      eyebrow: z.string(),
+      title: z.string(),
+      intro: z.string(),
+      items: z.array(
+        z.object({
+          icon: z.string(),
+          title: z.string(),
+          body: z.string(),
+          wide: z.boolean().default(false),
+        }),
+      ),
+    }),
+    process: z.object({
+      badge: z.string(),
+      title: z.string(),
+      steps: z.array(z.object({ icon: z.string(), title: z.string(), body: z.string() })),
+    }),
+    stack: z.object({
+      eyebrow: z.string(),
+      title: z.string(),
+      groups: z.array(
+        z.object({
+          name: z.string(),
+          primary: z.boolean().default(false),
+          chips: z.array(z.string()),
+        }),
+      ),
+    }),
+    experience: z.object({ eyebrow: z.string(), title: z.string() }),
+    testimonials: z.object({
+      eyebrow: z.string(),
+      title: z.string(),
+      items: z.array(z.object({ quote: z.string(), name: z.string(), role: z.string() })),
+    }),
+    contact: z.object({
+      eyebrow: z.string(),
+      title: z.string(),
+      body: z.string(),
+      email: z.string(),
+      whatsapp: z.string().optional(),
+      response: z.string().optional(),
+      projectTypes: z.array(z.string()),
+    }),
   }),
 });
 
-const skills = defineCollection({
-  loader: file('src/content/skills.yaml'),
+const experience = defineCollection({
+  loader: file('src/content/experience.yaml'),
   schema: z.object({
-    title: z.string(),
+    draft: draft,
+    role: z.string(),
+    company: z.string(),
+    location: z.string().optional(),
+    period: z.string(),
     order: z.number(),
-    skills: z.array(z.string()).min(1),
+    /** Highlighted (emerald) marker on the timeline. */
+    current: z.boolean().default(false),
+    highlights: z.array(z.string()).min(1),
+    stack: z.array(z.string()).default([]),
   }),
 });
 
@@ -72,8 +137,17 @@ const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
   schema: ({ image }) =>
     z.object({
+      draft: draft,
+      /** Has its own page in src/pages/projects/ instead of the template. */
+      customPage: z.boolean().default(false),
       name: z.string(),
       tagline: z.string(),
+      /** Highlight pill on the project card (e.g. a key result). */
+      badge: z.string().optional(),
+      /** Neutral pill next to the badge (e.g. market or domain). */
+      category: z.string().optional(),
+      /** Hand-built HTML phone screen shown on the card. */
+      preview: z.enum(['aura', 'cadence', 'breathefree']).optional(),
       summary: z.string(),
       tags: z.array(z.string()),
       platforms: z.array(
@@ -141,4 +215,4 @@ const projects = defineCollection({
     }),
 });
 
-export const collections = { profile, experience, skills, projects };
+export const collections = { profile, home, experience, projects };
