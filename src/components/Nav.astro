@@ -41,6 +41,10 @@ const links = [
     </nav>
 
     <div class="actions">
+      <button type="button" class="theme" data-theme-toggle aria-label="Switch to dark theme">
+        <Icon name="moon" size={19} class="i-moon" />
+        <Icon name="sun" size={19} class="i-sun" />
+      </button>
       <a href={url(cv)} class="cv" download>
         <Icon name="download" size={18} />
         Download CV
@@ -68,6 +72,43 @@ const links = [
 </header>
 
 <script>
+  // Theme switch. The current theme is the saved choice, else the OS one.
+  const root = document.documentElement;
+  const toggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  const prefersDark = matchMedia('(prefers-color-scheme: dark)');
+  const isDark = () =>
+    root.dataset.theme ? root.dataset.theme === 'dark' : prefersDark.matches;
+  const sync = () => {
+    const dark = isDark();
+    toggle?.setAttribute('aria-pressed', String(dark));
+    toggle?.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+  };
+  sync();
+  prefersDark.addEventListener('change', sync);
+
+  toggle?.addEventListener('click', () => {
+    const next = isDark() ? 'light' : 'dark';
+    const apply = () => {
+      root.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch {
+        /* Private mode: the choice lasts for this page view only. */
+      }
+      sync();
+    };
+    // A circle grows from the button and reveals the new theme. Skipped
+    // without View Transitions support or with reduced motion.
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!document.startViewTransition || reduce) return apply();
+    const r = toggle.getBoundingClientRect();
+    root.style.setProperty('--vt-x', `${r.left + r.width / 2}px`);
+    root.style.setProperty('--vt-y', `${r.top + r.height / 2}px`);
+    root.classList.add('theme-switching');
+    const t = document.startViewTransition(apply);
+    t.finished.finally(() => root.classList.remove('theme-switching'));
+  });
+
   // Close the mobile menu after choosing a section or tapping outside.
   const menu = document.querySelector<HTMLDetailsElement>('[data-menu]');
   menu?.querySelectorAll('a').forEach((a) =>
@@ -150,7 +191,7 @@ const links = [
     display: none;
     padding: 2px 10px;
     border-radius: 9999px;
-    border: 1px solid color-mix(in srgb, #bccac0 40%, transparent);
+    border: 1px solid var(--divider);
     background: var(--surface-container);
     color: var(--text-2);
     font-size: 12px;
@@ -242,7 +283,7 @@ const links = [
     display: inline-flex;
     padding: 0 18px;
     background: var(--primary);
-    color: #fff;
+    color: var(--on-primary);
     font-weight: 600;
   }
   .hire :global(.icon) {
@@ -258,6 +299,58 @@ const links = [
   .cv:active,
   .hire:active {
     transform: scale(0.97);
+  }
+
+  .theme {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    background: var(--surface);
+    color: var(--text-2);
+    cursor: pointer;
+    transition:
+      border-color var(--t-hover) var(--ease-out),
+      color var(--t-hover) var(--ease-out),
+      transform var(--t-press) var(--ease-out);
+  }
+  .theme:hover {
+    border-color: var(--border-hover);
+    color: var(--text);
+  }
+  .theme:active {
+    transform: scale(0.94);
+  }
+  .theme > :global(.icon) {
+    grid-area: 1 / 1;
+    transition:
+      transform 420ms var(--ease-out),
+      opacity 220ms var(--ease-out);
+  }
+  /* Light shows the moon (go dark); dark shows the sun (go light). */
+  .theme :global(.i-sun) {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+  }
+  :global(:root[data-theme='dark']) .theme :global(.i-sun) {
+    opacity: 1;
+    transform: none;
+  }
+  :global(:root[data-theme='dark']) .theme :global(.i-moon) {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.5);
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .theme :global(.i-sun) {
+      opacity: 1;
+      transform: none;
+    }
+    :global(:root:not([data-theme='light'])) .theme :global(.i-moon) {
+      opacity: 0;
+      transform: rotate(90deg) scale(0.5);
+    }
   }
 
   .menu {

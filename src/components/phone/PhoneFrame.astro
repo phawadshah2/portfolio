@@ -13,6 +13,7 @@ const { variant = 'full', class: className, label } = Astro.props;
 ---
 
 <div
+  data-light
   class:list={['device', variant, className]}
   role={label ? 'img' : undefined}
   aria-label={label}

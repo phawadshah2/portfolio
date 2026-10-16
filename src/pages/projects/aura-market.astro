@@ -693,12 +693,12 @@ const impact = [
     border-radius: var(--r);
   }
   .tone.red {
-    background: #fef2f2;
-    color: #dc2626;
+    background: var(--tone-red-bg);
+    color: var(--tone-red);
   }
   .tone.amber {
-    background: #fffbeb;
-    color: #d97706;
+    background: var(--tone-amber-bg);
+    color: var(--tone-amber);
   }
   .tone.green {
     background: var(--primary-soft);
@@ -827,11 +827,11 @@ const impact = [
   }
   .code-pill.solid {
     background: var(--primary);
-    color: #fff;
+    color: var(--on-primary);
   }
   .code-pill.slate {
-    background: #e0e7ff;
-    color: var(--slate);
+    background: var(--slate-soft);
+    color: var(--text);
   }
   .query {
     display: flex;
@@ -1224,7 +1224,7 @@ const impact = [
     height: 48px;
     border-radius: 50%;
     background: var(--primary);
-    color: #fff;
+    color: var(--on-primary);
     font-weight: 700;
   }
 
@@ -1276,6 +1276,7 @@ const impact = [
     justify-items: center;
     padding: 56px 24px;
     border-radius: var(--r-xl);
+    border: 1px solid var(--border);
     background:
       radial-gradient(60% 80% at 50% 0%, color-mix(in srgb, var(--primary-bright) 22%, transparent), transparent),
       var(--slate);

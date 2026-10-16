@@ -102,7 +102,7 @@ const nudge: Partial<Record<IconName, string>> = {
 
   .btn-primary {
     background: var(--primary);
-    color: #fff;
+    color: var(--on-primary);
     box-shadow: var(--shadow-sm);
   }
   .btn-primary:hover {
@@ -117,8 +117,8 @@ const nudge: Partial<Record<IconName, string>> = {
     font-weight: 500;
   }
   .btn-outline:hover {
-    border-color: #cbd5e1;
-    background: #f8fafc;
+    border-color: var(--border-hover);
+    background: var(--outline-hover-bg);
   }
 
   .btn-slate {
@@ -126,7 +126,7 @@ const nudge: Partial<Record<IconName, string>> = {
     color: #fff;
   }
   .btn-slate:hover {
-    background: #334155;
+    background: var(--slate-hover);
   }
 
   .btn-link {

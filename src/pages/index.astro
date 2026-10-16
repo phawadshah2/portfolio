@@ -328,7 +328,7 @@ const afterHeadline = hero.headline.length;
     gap: 12px 24px;
     width: 100%;
     padding-top: 24px;
-    border-top: 1px solid #e2e2e4;
+    border-top: 1px solid var(--divider);
     color: var(--text-2);
     font-size: 12px;
     font-weight: 600;
@@ -383,7 +383,7 @@ const afterHeadline = hero.headline.length;
     }
     .metric {
       padding-inline: 24px;
-      border-left: 1px solid #e2e2e4;
+      border-left: 1px solid var(--divider);
     }
     .metric:first-child {
       padding-left: 0;
@@ -509,7 +509,7 @@ const afterHeadline = hero.headline.length;
     font-weight: 700;
   }
   .step :global(.step-icon) {
-    color: #9ca3af;
+    color: var(--placeholder);
     transition: color var(--t-hover) var(--ease-out);
   }
   .step:hover :global(.step-icon) {
@@ -544,7 +544,7 @@ const afterHeadline = hero.headline.length;
     padding: 20px;
     border: 1px solid var(--border);
     border-radius: var(--r-md);
-    background: #f9f9fb;
+    background: var(--surface-alt);
   }
   @media (min-width: 768px) {
     .stack-row {
@@ -561,7 +561,7 @@ const afterHeadline = hero.headline.length;
     padding: 3px 10px;
     border-radius: var(--r-sm);
     background: var(--primary);
-    color: #fff;
+    color: var(--on-primary);
     font-size: 13px;
   }
 
