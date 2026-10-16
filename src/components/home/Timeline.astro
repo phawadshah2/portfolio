@@ -76,11 +76,11 @@ const step = Math.round(DRAW_MS / Math.max(entries.length, 1));
     height: 20px;
     border-radius: 50%;
     border: 4px solid var(--bg);
-    background: #cbd5e1;
+    background: var(--dot-low);
     box-shadow: 0 0 0 1px var(--border);
   }
   .dot[data-tone='1'] {
-    background: #94a3b8;
+    background: var(--dot-mid);
   }
   .dot.current {
     background: var(--primary);

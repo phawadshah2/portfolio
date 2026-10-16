@@ -64,7 +64,8 @@ const person = {
     {canonical && <meta property="og:url" content={canonical} />}
     <meta name="twitter:card" content="summary_large_image" />
 
-    <meta name="theme-color" content="#FFFFFF" />
+    <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#121921" media="(prefers-color-scheme: dark)" />
     {isDraft && <meta name="robots" content="noindex" />}
     <link rel="icon" type="image/png" href={url('/favicon.png')} />
     <link rel="apple-touch-icon" href={url('/icons/icon-192.png')} />
@@ -76,9 +77,19 @@ const person = {
 
     <script type="application/ld+json" set:html={JSON.stringify(person)} />
 
-    <!-- Runs before first paint: reveal styles apply only when JavaScript is
-         available, so content is never hidden without it. -->
-    <script is:inline>document.documentElement.classList.add('js');</script>
+    <!-- Runs before first paint: applies the saved theme (no flash) and
+         enables reveal styles only when JavaScript is available. -->
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        root.classList.add('js');
+        // Saved choice wins; otherwise the OS preference applies via CSS.
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'light' || t === 'dark') root.dataset.theme = t;
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -111,8 +122,8 @@ const person = {
 <style>
   .draft-banner {
     padding: 6px var(--gutter);
-    background: #fef3c7;
-    color: #78350f;
+    background: var(--banner-bg);
+    color: var(--banner-ink);
     font-size: 12px;
     font-weight: 600;
     text-align: center;

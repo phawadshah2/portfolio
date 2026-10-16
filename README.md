@@ -101,6 +101,12 @@ npm run preview    # serve dist/ locally
   - Project cards: ≈2.5° 3D tilt, image scale, arrow nudge (desktop only).
   - Aura Market preview: accessible tabs switch the phone screen (crossfade + slide).
   - `prefers-reduced-motion` shows everything instantly.
+- **Theme:** light (the Stitch design) and a derived dark theme. It follows
+  the OS until the visitor uses the nav switch; the choice is saved and
+  applied before first paint (no flash). Switching reveals the new theme
+  with a circle growing from the button (View Transitions; instant without
+  support or with reduced motion). Phone mockups and app panels are marked
+  `data-light` and keep their light app UI in both themes.
 - **Fonts:** Inter and JetBrains Mono, self-hosted Latin-subset WOFF2.
 - **Icons:** inline SVG (`src/components/Icon.astro`), no icon font.
 - **SEO:** per-page title and description, Open Graph image, JSON-LD `Person`
