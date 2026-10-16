@@ -1,0 +1,106 @@
+---
+/**
+ * Device shell from the design: #0F172A housing, 42px corners, dynamic
+ * island, home indicator. `mini` is the shorter card variant (no island,
+ * height follows content) used on project cards.
+ */
+interface Props {
+  variant?: 'full' | 'mini';
+  class?: string;
+  label?: string;
+}
+const { variant = 'full', class: className, label } = Astro.props;
+---
+
+<div
+  class:list={['device', variant, className]}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+>
+  <div class="screen">
+    {
+      variant === 'full' && (
+        <div class="island-row" aria-hidden="true">
+          <div class="island">
+            <span />
+            <span class="cam" />
+          </div>
+        </div>
+      )
+    }
+    <div class="content"><slot /></div>
+    {variant === 'full' && <div class="indicator" aria-hidden="true" />}
+  </div>
+</div>
+
+<style>
+  .device {
+    position: relative;
+    width: var(--phone-w, 320px);
+    border-radius: 42px;
+    padding: 12px;
+    background: var(--device);
+    border: 3px solid #334155;
+    box-shadow: var(--shadow-phone);
+  }
+  .mini {
+    border-radius: 36px;
+    padding: 10px;
+    border-width: 0;
+  }
+  .screen {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 32px;
+    background: var(--surface);
+    color: var(--text);
+  }
+  .full .screen {
+    aspect-ratio: 9 / 19;
+  }
+  .mini .screen {
+    border-radius: 27px;
+  }
+  .content {
+    position: relative;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .island-row {
+    display: flex;
+    justify-content: center;
+    padding: 12px 0 8px;
+  }
+  .island {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 96px;
+    height: 16px;
+    padding: 0 8px;
+    border-radius: 9999px;
+    background: #020617;
+  }
+  .island span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #334155;
+  }
+  .island .cam {
+    width: 8px;
+    height: 8px;
+    background: color-mix(in srgb, #10b981 40%, transparent);
+  }
+  .indicator {
+    width: 96px;
+    height: 4px;
+    margin: 6px auto;
+    border-radius: 9999px;
+    background: var(--device);
+  }
+</style>

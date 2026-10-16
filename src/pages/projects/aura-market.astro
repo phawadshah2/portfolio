@@ -1,0 +1,1306 @@
+---
+/**
+ * DRAFT: the Aura Market case study exactly as in the Stitch design. All of
+ * this copy (client, numbers, quotes) is SAMPLE content and must be replaced
+ * with a real project before publishing. Real case studies normally use the
+ * Markdown template (src/content/projects/*.md + [slug].astro).
+ */
+import Button from '../../components/Button.astro';
+import Icon from '../../components/Icon.astro';
+import AppPreview from '../../components/phone/AppPreview.astro';
+import Base from '../../layouts/Base.astro';
+import { url } from '../../lib/paths';
+
+const info = [
+  { label: 'Role', title: 'Lead Flutter & Product Engineer', sub: 'UI/UX, Frontend, Backend, Store Launch' },
+  { label: 'Timeline', title: '12 Weeks', sub: 'Wireframes to App Store & Google Play approval' },
+  { label: 'Platforms', title: 'Cross-Platform Triple Release', sub: 'iOS, Android, and Flutter Web Admin' },
+];
+const coreStack = ['Flutter', 'Riverpod 2.0', 'Firebase', 'Stripe'];
+
+const screens = [
+  {
+    id: 'browse' as const,
+    label: 'Browse',
+    title: 'Instant catalog search',
+    body: 'Delivery-aware storefront with category chips and a persistent cart bar.',
+  },
+  {
+    id: 'detail' as const,
+    label: 'Product detail',
+    title: 'Native 2-tap checkout',
+    body: 'Stock, nutrition facts and dispatch time, finished with Apple Pay.',
+  },
+  {
+    id: 'tracking' as const,
+    label: 'Live tracking',
+    title: 'Real-time courier telemetry',
+    body: 'Interpolated GPS route, live ETA and one-tap contact with the driver.',
+  },
+];
+
+const problems = [
+  {
+    icon: 'gauge',
+    tone: 'red',
+    title: 'The Legacy Bottleneck: Hybrid Lag & Frame Drops',
+    body: 'Their existing hybrid Cordova wrapper took 4.2 seconds just to load the primary grocery catalog, triggering 52% bounce rates on mobile networks. Search suffered from 1.5s server-roundtrip latencies, frustrating users during quick basket-building sessions.',
+  },
+  {
+    icon: 'cart',
+    tone: 'amber',
+    title: 'The 64% Checkout Abandonment Spiral',
+    body: 'The previous web checkout forced multi-step webview redirects, required manual credit card entry without native autofill, and lacked regional zero-friction payment gateways like Apple Pay, Saudi Mada, and Tabby Pay-in-4.',
+  },
+  {
+    icon: 'navigation',
+    tone: 'green',
+    title: 'Zero Order Visibility & High Support Overhead',
+    body: 'Deliveries had no real-time telemetry. Inbound customer service was overwhelmed with thousands of "Where is my order?" tickets during peak delivery windows, driving up logistical overhead and souring retention.',
+  },
+];
+
+const ownership = [
+  {
+    icon: 'design',
+    step: '01. Discovery & UI/UX',
+    title: 'Accessible Design System',
+    body: 'Designed a comprehensive 40+ screen mobile system in Figma. Engineered high-contrast ergonomic components, thumb-zone navigation anchors, and dark-mode tokens complying with WCAG 2.1 AA accessibility.',
+    tools: 'Figma • Design Tokens • Prototyping',
+  },
+  {
+    icon: 'layers',
+    step: '02. Engineering',
+    title: 'Clean Flutter Architecture',
+    body: 'Constructed a domain-driven architectural foundation with Riverpod 2.0. Established strict unidirectional data flows, repository pattern caching with Hive/Isar, and zero UI dependency pollution.',
+    tools: 'Riverpod • Freezed • Hive Caching',
+  },
+  {
+    icon: 'swap',
+    step: '03. Integrations',
+    title: 'Real-Time Data & Payments',
+    body: 'Integrated native Apple Pay & Google Pay via Stripe platform sheets. Built WebSocket listeners for live courier telemetry and automated bidirectional inventory updates with Node.js microservices.',
+    tools: 'Apple Pay • WebSockets • Webhooks',
+  },
+  {
+    icon: 'rocket',
+    step: '04. Store Deployment',
+    title: 'CI/CD & Store Approvals',
+    body: 'Implemented GitHub Actions automated pipelines with Fastlane. Managed code signing, provisioning profiles, staged TestFlight beta tracks, and achieved day-one unconditional App Store approval.',
+    tools: 'Fastlane • TestFlight • App Store Review',
+  },
+];
+
+const impact = [
+  { label: 'Monthly Active Users', value: '120K+', body: 'Active shopping accounts across the UAE and Saudi Arabia within quarter one.' },
+  { label: 'Store Satisfaction', value: '4.8 ★', body: 'App Store & Google Play aggregate rating across 2,400+ genuine customer reviews.' },
+  { label: 'Checkout Drop-Off', value: '-38%', body: 'Reduction in cart abandonment rate compared to the legacy responsive website.' },
+  { label: 'Stability In Production', value: '99.94%', body: 'Crash-free session rate measured via Firebase Crashlytics on 1.4M total sessions.' },
+];
+---
+
+<Base
+  title="Aura Market — Case Study"
+  description="Omnichannel e-commerce & instant delivery app built with Flutter: sub-second catalog search, Apple Pay and live driver tracking."
+>
+  <!-- Header -->
+  <section class="container head">
+    <nav class="crumbs" aria-label="Breadcrumb" data-reveal>
+      <a href={url('/#work')}><Icon name="arrow-left" size={16} /> Work</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Aura Market</span>
+    </nav>
+    <p class="pill pill-primary" data-reveal style="--d: 1">
+      <span class="dot" aria-hidden="true"></span> Flagship Case Study • E-commerce &amp; Logistics
+    </p>
+    <h1 class="t-hero title" data-reveal style="--d: 2; --rise: 20px; --dur: 620ms">
+      Aura Market — Omnichannel E-commerce &amp; Instant Delivery App
+    </h1>
+    <p class="t-body-lg lede" data-reveal style="--d: 3">
+      Engineered a production-ready iOS and Android shopping experience with sub-second catalog
+      search, Apple Pay integration, and live driver tracking.
+    </p>
+
+    <dl class="surface-card info" data-reveal style="--d: 4">
+      {
+        info.map((i) => (
+          <div class="info-cell">
+            <dt class="info-label">{i.label}</dt>
+            <dd>
+              <p class="info-title">{i.title}</p>
+              <p class="info-sub">{i.sub}</p>
+            </dd>
+          </div>
+        ))
+      }
+      <div class="info-cell">
+        <dt class="info-label">Core Stack</dt>
+        <dd>
+          <ul class="chips">
+            {coreStack.map((c, i) => <li class:list={['chip', { 'chip-primary': i < 2 }]}>{c}</li>)}
+          </ul>
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <!-- Interactive preview -->
+  <section class="container section-tight" aria-labelledby="preview-title">
+    <h2 class="visually-hidden" id="preview-title">App preview</h2>
+    <div data-reveal style="--rise: 24px; --dur: 650ms">
+      <AppPreview screens={screens} name="Aura Market" />
+    </div>
+  </section>
+
+  <!-- Business landscape -->
+  <section class="band">
+    <div class="container section landscape">
+      <div class="landscape-text">
+        <span class="eyebrow" data-reveal>Business Landscape</span>
+        <h2 class="t-headline-lg" data-reveal style="--d: 1">
+          Unifying physical stores and fragmented digital commerce into one flagship mobile app.
+        </h2>
+        <p class="body" data-reveal style="--d: 2">
+          The client, a premier multi-brand retail conglomerate headquartered in the United Arab
+          Emirates, operated 28 physical locations alongside disparate web stores. Customers
+          suffered from fragmented loyalty programs, inconsistent inventory statuses, and slow mobile
+          web checkout flows.
+        </p>
+        <div class="deadline" data-reveal style="--d: 3">
+          <Icon name="flag" size={18} />
+          <p>
+            <strong>The Hard Deadline:</strong> A non-negotiable 12-week go-to-market mandate to capture
+            high-volume Q4 holiday shoppers and Singles' Day transactions across Dubai and Riyadh.
+          </p>
+        </div>
+      </div>
+      <ul class="problems">
+        {
+          problems.map((p, i) => (
+            <li class="surface-card problem" data-reveal style={`--d: ${i}`}>
+              <div class="problem-head">
+                <span class:list={['tone', p.tone]}>
+                  <Icon name={p.icon} size={18} />
+                </span>
+                <h3 class="t-headline-sm">{p.title}</h3>
+              </div>
+              <p class="body">{p.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Ownership -->
+  <section class="container section">
+    <div class="section-head narrow">
+      <span class="eyebrow" data-reveal>End-to-End Ownership</span>
+      <h2 class="t-headline-lg" data-reveal style="--d: 1">
+        Architected, designed, and shipped from first Figma commit to App Store release.
+      </h2>
+      <p class="t-body-lg" data-reveal style="--d: 2">
+        As Lead Flutter &amp; Product Engineer, I bridged visual fidelity with industrial-grade
+        software engineering, operating autonomously across the entire application lifecycle.
+      </p>
+    </div>
+    <ul class="owners">
+      {
+        ownership.map((o, i) => (
+          <li class="surface-card owner" data-reveal style={`--d: ${i}`}>
+            <span class="icon-tile">
+              <Icon name={o.icon} size={22} />
+            </span>
+            <p class="owner-step">{o.step}</p>
+            <h3 class="t-headline-sm">{o.title}</h3>
+            <p class="body small">{o.body}</p>
+            <p class="owner-tools">{o.tools}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <!-- Product highlights -->
+  <section class="container section" aria-labelledby="highlights-title">
+    <div class="section-head narrow">
+      <span class="eyebrow" data-reveal>Product Highlights</span>
+      <h2 class="t-headline-lg" id="highlights-title" data-reveal style="--d: 1">
+        Surgical execution on core interactions that drive conversions.
+      </h2>
+      <p class="t-body-lg" data-reveal style="--d: 2">
+        Every micro-interaction and data query was engineered to maximize tactile feedback and
+        eradicate checkout friction.
+      </p>
+    </div>
+
+    <div class="feature">
+      <div class="feature-text">
+        <p class="pill pill-primary" data-reveal><Icon name="bolt" size={14} /> Sub-80ms Query Response</p>
+        <h3 class="t-headline-lg" data-reveal style="--d: 1">Instant Search &amp; Smart In-Memory Filtering</h3>
+        <p class="t-body-lg" data-reveal style="--d: 2">
+          Traditional e-commerce apps strain networks by firing full REST requests on every character
+          stroke. We built a local client-side trie index coupled with a 150ms debounced Riverpod
+          state notifier.
+        </p>
+        <ul class="checks" data-reveal style="--d: 3">
+          <li><Icon name="check-circle" size={18} /><span><strong>Zero-latency autocomplete:</strong> Pre-caches the top 5,000 frequently bought items locally upon app startup.</span></li>
+          <li><Icon name="check-circle" size={18} /><span><strong>Fuzzy matching algorithm:</strong> Catches common localized spelling variants (e.g., Arabic transliterations) with automatic typo forgiveness.</span></li>
+          <li><Icon name="check-circle" size={18} /><span><strong>Instant multi-facet chips:</strong> Filter by dietary needs, brand, and delivery window with synchronous UI updates.</span></li>
+        </ul>
+      </div>
+      <div class="surface-card widget search-widget" data-reveal style="--d: 2; --rise: 24px">
+        <div class="widget-head">
+          <p class="widget-title"><Icon name="search" size={20} /> Live Search Benchmark</p>
+          <span class="code-pill">54ms average</span>
+        </div>
+        <div class="query">
+          <span class="typed">"org avoc"</span><span class="caret" aria-hidden="true"></span>
+          <span class="matches">3 instant matches</span>
+        </div>
+        <ul class="results">
+          <li style="--r: 0">
+            <span class="abbr">AV</span>
+            <div><p class="strong">Organic Hass Avocados (Pack of 3)</p><p class="sub">Matched via local in-memory index</p></div>
+            <span class="price">AED 16.50</span>
+          </li>
+          <li style="--r: 1">
+            <span class="abbr">OIL</span>
+            <div><p class="strong">Cold-Pressed Extra Virgin Avocado Oil</p><p class="sub">Matched via category synonym tag</p></div>
+            <span class="price">AED 38.00</span>
+          </li>
+        </ul>
+        <div class="mono-box">
+          <span>Memory Footprint: 3.4 MB</span>
+          <span>Network Requests: 0 (Cached)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature reverse">
+      <div class="feature-text">
+        <p class="pill pill-primary" data-reveal><Icon name="trending-up" size={14} /> 38% Drop-Off Reduction</p>
+        <h3 class="t-headline-lg" data-reveal style="--d: 1">Frictionless 2-Tap Native Checkout</h3>
+        <p class="t-body-lg" data-reveal style="--d: 2">
+          We replaced slow multi-stage web checkout redirects with native platform payment
+          controllers. Through Stripe and Apple PassKit integration, customers complete authorized
+          transactions in seconds using FaceID.
+        </p>
+        <ul class="checks" data-reveal style="--d: 3">
+          <li><Icon name="check-circle" size={18} /><span><strong>Regional Wallets:</strong> Simultaneous support for Apple Pay, Google Pay, Mada (Saudi National Debit), and Tabby installments.</span></li>
+          <li><Icon name="check-circle" size={18} /><span><strong>Automated Address Resolution:</strong> Leveraged device location permission and Google Places SDK to auto-populate villa and apartment numbers.</span></li>
+          <li><Icon name="check-circle" size={18} /><span><strong>Optimistic UI Locking:</strong> Renders visual confirmation instantly while webhook idempotency guarantees zero double-charge risks.</span></li>
+        </ul>
+      </div>
+      <div class="surface-card widget" data-reveal style="--d: 2; --rise: 24px">
+        <div class="widget-head">
+          <p class="widget-title"><Icon name="money" size={20} /> Native Apple Pay Sheet</p>
+          <span class="code-pill solid">Native PassKit</span>
+        </div>
+        <div class="sheet">
+          <div class="sheet-row"><span>Order Subtotal</span><span>AED 142.00</span></div>
+          <div class="sheet-row"><span>Express Delivery (15 min)</span><span class="free">FREE</span></div>
+          <div class="sheet-row total"><span>Total Amount</span><span class="total-amt">AED 142.00</span></div>
+        </div>
+        <div class="biometric">
+          <Icon name="fingerprint" size={24} />
+          <div>
+            <p class="strong">Biometric Double-Click Confirmation</p>
+            <p class="sub">Zero redirect webviews. Tokens decrypted securely by Stripe SDK.</p>
+          </div>
+        </div>
+        <p class="caption">Eliminated 5 traditional checkout form fields</p>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="feature-text">
+        <p class="pill pill-primary" data-reveal><Icon name="router" size={14} /> Smooth WebSocket Telemetry</p>
+        <h3 class="t-headline-lg" data-reveal style="--d: 1">Real-Time Driver Tracking &amp; Live Route Telemetry</h3>
+        <p class="t-body-lg" data-reveal style="--d: 2">
+          Rather than relying on battery-draining GPS polling, the application maintains a
+          lightweight duplex WebSocket channel to our dispatch cluster. Coordinates are interpolated
+          with custom Flutter animations for buttery 60fps courier movement across the map.
+        </p>
+        <ul class="checks" data-reveal style="--d: 3">
+          <li><Icon name="check-circle" size={18} /><span><strong>Flutter CustomPainter:</strong> Engineered custom polyline rendering to prevent native Google Maps memory leaks during long live-tracking views.</span></li>
+          <li><Icon name="check-circle" size={18} /><span><strong>Dynamic ETA Calculations:</strong> Updates arrival windows on the fly based on traffic congestion alerts and hub dispatch readiness.</span></li>
+          <li><Icon name="check-circle" size={18} /><span><strong>Foreground Push Triggers:</strong> Emits discrete haptic pulses and sound cues as courier enters a 200m geofence radius.</span></li>
+        </ul>
+      </div>
+      <div class="surface-card widget" data-reveal style="--d: 2; --rise: 24px">
+        <div class="widget-head">
+          <p class="widget-title"><Icon name="navigation" size={20} /> Telemetry Pipeline</p>
+          <span class="code-pill">Duplex Socket</span>
+        </div>
+        <div class="stream">
+          <div class="stream-top">
+            <span>STREAM: /orders/dxb-9841/live</span>
+            <span class="live"><span class="live-dot" aria-hidden="true"></span>CONNECTED</span>
+          </div>
+          <p class="coords">{'{'} lat: 25.1972, lng: 55.2744, bearing: 42° {'}'}</p>
+          <p class="sub mono">Interpolating 12 frames via Catmull-Rom spline</p>
+        </div>
+        <div class="kpis">
+          <div><span>Packet Interval</span><strong>1,200 ms</strong></div>
+          <div><span>Battery Consumption</span><strong>&lt; 1.8% / hr</strong></div>
+        </div>
+        <div class="impact-note">
+          <Icon name="support" size={20} />
+          <p><strong>Logistics Impact:</strong> Inbound "Where is my order?" tickets decreased by <strong>62%</strong> within first month.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Engineering deep dive -->
+  <section class="band">
+    <div class="container section">
+      <div class="section-head narrow">
+        <span class="eyebrow" data-reveal>Engineering Deep Dive</span>
+        <h2 class="t-headline-lg" data-reveal style="--d: 1">
+          Architectural rigor behind high-performance cross-platform code.
+        </h2>
+        <p class="t-body-lg" data-reveal style="--d: 2">
+          Built for scalability, maintainability, and enterprise-grade team collaboration using modern
+          Flutter and Dart patterns.
+        </p>
+      </div>
+      <div class="deep">
+        <article class="surface-card deep-card" data-reveal>
+          <div class="deep-head">
+            <h3 class="t-headline-sm">Clean Architecture &amp; Layer Decoupling</h3>
+            <span class="code-pill slate">Domain-Driven</span>
+          </div>
+          <p class="body small">
+            Strict separation between Presentation, Domain, and Data layers. Domain layer maintains zero
+            dependencies on Flutter framework classes, allowing business logic to be tested in pure Dart
+            runtime at lightning speeds.
+          </p>
+          <ol class="layers">
+            <li><span>1. Presentation Layer</span><span>Flutter Widgets • Riverpod Notifiers • Freezed ViewStates</span></li>
+            <li><span>2. Domain Layer</span><span>Entities • UseCase Interactors • Value Objects (Pure Dart)</span></li>
+            <li><span>3. Data Layer</span><span>Repositories • Hive Caching • Dio Interceptors • WebSocket DTOs</span></li>
+          </ol>
+          <ul class="chips">
+            <li class="chip">Riverpod 2.0 CodeGen</li>
+            <li class="chip">Freezed Data Classes</li>
+            <li class="chip">Equatable</li>
+            <li class="chip">Dio Network Cache</li>
+          </ul>
+        </article>
+        <article class="surface-card deep-card" data-reveal style="--d: 1">
+          <div class="deep-head">
+            <h3 class="t-headline-sm">Zero-Jank 60fps Performance</h3>
+            <Icon name="gauge" size={22} class="deep-icon" />
+          </div>
+          <p class="body small">
+            Eliminated raster thread starvation and layout thrashing across long nested product feeds
+            through deliberate Flutter engine optimizations:
+          </p>
+          <ul class="checks tight">
+            <li><Icon name="check" size={16} /><span><strong>RepaintBoundary:</strong> Isolated heavy animated elements from list item re-renders.</span></li>
+            <li><Icon name="check" size={16} /><span><strong>CachedNetworkImage:</strong> Multi-tiered disk and memory LRU caching with downscaled target dimensions.</span></li>
+            <li><Icon name="check" size={16} /><span><strong>ItemExtent builders:</strong> Fixed dimensional hints to bypass variable layout re-computations during rapid scrolling.</span></li>
+          </ul>
+        </article>
+        <article class="surface-card deep-card" data-reveal>
+          <div class="deep-head">
+            <h3 class="t-headline-sm">Native MethodChannels &amp; Hardware Interop</h3>
+            <Icon name="devices" size={22} class="deep-icon" />
+          </div>
+          <p class="body small">
+            Bridged native Swift and Kotlin code directly via customized Flutter platform channels to
+            handle specialized retail hardware capabilities:
+          </p>
+          <div class="mini-grid">
+            <div><p class="strong">NFC Tag Reader</p><p class="sub">Direct CoreNFC / Android NFC interop for in-store physical shelf price checks.</p></div>
+            <div><p class="strong">Secure Biometrics</p><p class="sub">Hardware Secure Enclave integration for one-touch re-authentication.</p></div>
+          </div>
+        </article>
+        <article class="surface-card deep-card" data-reveal style="--d: 1">
+          <div class="deep-head">
+            <h3 class="t-headline-sm">Automated Testing &amp; Fastlane CI/CD</h3>
+            <Icon name="verified" size={22} class="deep-icon" />
+          </div>
+          <p class="body small">
+            Continuous integration setup ensuring zero regressions through automated regression suites
+            and deployment automation:
+          </p>
+          <div class="mini-stats">
+            <div><strong data-count="85%">85%</strong><span>Test Coverage</span></div>
+            <div><strong data-count="14 min">14 min</strong><span>Pipeline to TestFlight</span></div>
+            <div><strong>0</strong><span>Manual Builds</span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Business impact -->
+  <section class="container section">
+    <div class="section-head centered">
+      <span class="eyebrow" data-reveal>Business Impact</span>
+      <h2 class="t-headline-lg" data-reveal style="--d: 1">
+        Concrete outcomes that drove revenue and customer loyalty.
+      </h2>
+      <p class="t-body-lg" data-reveal style="--d: 2">
+        Within 90 days of launch, Aura Market exceeded every key performance indicator projected by
+        retail executive leadership.
+      </p>
+    </div>
+    <ul class="impact">
+      {
+        impact.map((m, i) => (
+          <li class="surface-card impact-card" data-reveal style={`--d: ${i}`}>
+            <p class="impact-label">{m.label}</p>
+            <p class="impact-value" data-count={m.value}>{m.value}</p>
+            <p class="body small">{m.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <figure class="testimonial" data-reveal>
+      <Icon name="quote" size={36} class="t-mark" />
+      <blockquote>
+        "Fawad took our vague requirements and delivered a world-class app that outperformed all our
+        targets. His ability to own everything from pixel-perfect UI interactions to robust native
+        payment channels in a tight 12-week window was unmatched."
+      </blockquote>
+      <figcaption>
+        <span class="initials">KH</span>
+        <span>
+          <strong>Kareem Al-Husseini</strong>
+          <span class="sub">Chief Digital Officer, Aura Retail Group UAE</span>
+        </span>
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- Up next + CTA -->
+  <section class="container section-tight">
+    <a class="surface-card next" href={url('/projects/cadence')} data-reveal>
+      <div>
+        <span class="eyebrow">Up Next</span>
+        <p class="t-headline-md">Cadence — Habit Tracker with AI Coaching</p>
+        <p class="body small">
+          An offline-first mobile app with local on-device machine learning recommendations and
+          gamified audio feedback.
+        </p>
+      </div>
+      <span class="next-cta">View Next Case Study <Icon name="arrow-right" /></span>
+    </a>
+  </section>
+
+  <section class="container section">
+    <div class="cta" data-reveal="mask">
+      <h2 class="t-headline-lg">Let's Work Together</h2>
+      <p class="cta-lead">Have an app idea or looking for a senior Flutter engineer?</p>
+      <p class="cta-body">
+        I help startups and enterprises take cross-platform mobile products from technical
+        architecture and Figma specs to production App Store releases.
+      </p>
+      <div class="cta-actions">
+        <Button href="/#contact" icon="arrow-right">Start a project</Button>
+        <Button href="/#contact" variant="outline" icon="calendar" leading>Schedule a call</Button>
+      </div>
+      <p class="cta-meta">Available for Q2 contracts • GMT+4 / Remote Worldwide</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .head {
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+    padding-block: 40px 48px;
+  }
+  @media (min-width: 1024px) {
+    .head {
+      padding-block: 64px;
+    }
+  }
+  .crumbs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-2);
+  }
+  .crumbs a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color var(--t-hover) var(--ease-out);
+  }
+  .crumbs a:hover {
+    color: var(--primary);
+  }
+  .crumbs a :global(.icon) {
+    transition: transform var(--t-hover) var(--ease-out);
+  }
+  .crumbs a:hover :global(.icon) {
+    transform: translateX(-3px);
+  }
+  .crumbs [aria-current] {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--primary);
+  }
+  .title {
+    max-width: 24ch;
+  }
+  .lede {
+    max-width: 46rem;
+  }
+  .info {
+    display: grid;
+    gap: 20px;
+    width: 100%;
+    margin: 12px 0 0;
+    padding: 24px;
+  }
+  @media (min-width: 768px) {
+    .info {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .info {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+    .info-cell {
+      padding-inline: 24px;
+      border-left: 1px solid var(--border);
+    }
+    .info-cell:first-child {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+  .info dd {
+    margin: 6px 0 0;
+  }
+  .info-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .info-title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .info-sub {
+    margin-top: 2px;
+    color: var(--text-2);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .section-tight {
+    padding-block: 16px 48px;
+  }
+  .band {
+    background: var(--surface-low);
+    border-block: 1px solid var(--border);
+  }
+  .body {
+    color: var(--text-2);
+  }
+  .small {
+    font-size: 14px;
+    line-height: 23px;
+  }
+  .strong {
+    font-weight: 600;
+  }
+  .sub {
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 17px;
+  }
+  .narrow {
+    max-width: 48rem;
+  }
+  .centered {
+    justify-items: center;
+    max-width: 48rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  /* Landscape */
+  .landscape {
+    display: grid;
+    gap: 40px;
+  }
+  @media (min-width: 1024px) {
+    .landscape {
+      grid-template-columns: 5fr 7fr;
+      gap: 48px;
+      align-items: start;
+    }
+  }
+  .landscape-text {
+    display: grid;
+    gap: 20px;
+  }
+  .deadline {
+    display: flex;
+    gap: 12px;
+    padding: 18px 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    background: var(--surface-container);
+    font-size: 14px;
+    line-height: 21px;
+  }
+  .deadline :global(.icon) {
+    flex: none;
+    margin-top: 2px;
+    color: var(--primary);
+  }
+  .problems {
+    display: grid;
+    gap: 20px;
+  }
+  .problem {
+    display: grid;
+    gap: 14px;
+    padding: 24px;
+  }
+  .problem-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .tone {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 38px;
+    height: 38px;
+    border-radius: var(--r);
+  }
+  .tone.red {
+    background: #fef2f2;
+    color: #dc2626;
+  }
+  .tone.amber {
+    background: #fffbeb;
+    color: #d97706;
+  }
+  .tone.green {
+    background: var(--primary-soft);
+    color: var(--primary);
+  }
+
+  /* Ownership */
+  .owners {
+    display: grid;
+    gap: 20px;
+  }
+  @media (min-width: 768px) {
+    .owners {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .owners {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .owner {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 24px;
+  }
+  .owner .icon-tile {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 14px;
+  }
+  .owner-step {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .owner-tools {
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* Features */
+  .feature {
+    display: grid;
+    gap: 32px;
+    align-items: center;
+    margin-top: 72px;
+  }
+  @media (min-width: 1024px) {
+    .feature {
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+    }
+    .feature.reverse .feature-text {
+      order: 2;
+    }
+  }
+  .feature-text {
+    display: grid;
+    gap: 18px;
+    justify-items: start;
+  }
+  .checks {
+    display: grid;
+    gap: 12px;
+  }
+  .checks li {
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    gap: 12px;
+    color: var(--text-2);
+    font-size: 14px;
+    line-height: 21px;
+  }
+  .checks strong {
+    color: var(--text);
+  }
+  .checks :global(.icon) {
+    margin-top: 1px;
+    color: var(--primary);
+  }
+  .checks.tight li {
+    grid-template-columns: 16px 1fr;
+  }
+  .widget {
+    display: grid;
+    gap: 16px;
+    width: 100%;
+    max-width: 460px;
+    justify-self: center;
+    padding: 24px;
+    box-shadow: var(--shadow-lg);
+  }
+  .widget-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .widget-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .widget-title :global(.icon) {
+    color: var(--primary);
+  }
+  .code-pill {
+    padding: 3px 9px;
+    border-radius: 4px;
+    background: var(--primary-soft);
+    color: var(--primary-ink);
+    font: 500 11px var(--font-mono);
+    white-space: nowrap;
+  }
+  .code-pill.solid {
+    background: var(--primary);
+    color: #fff;
+  }
+  .code-pill.slate {
+    background: #e0e7ff;
+    color: var(--slate);
+  }
+  .query {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 14px;
+    border-radius: var(--r);
+    background: var(--surface-low);
+    font: 500 14px var(--font-mono);
+    color: var(--primary);
+  }
+  .matches {
+    margin-left: auto;
+    font: 400 11px var(--font);
+    color: var(--text-muted);
+  }
+  /* The query types itself in once the widget is on screen. */
+  .typed {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: bottom;
+  }
+  :global(.js) .search-widget:not(.is-visible) .typed {
+    clip-path: inset(0 100% 0 0);
+  }
+  :global(.js) .search-widget.is-visible .typed {
+    animation: type 900ms steps(9) 300ms both;
+  }
+  @keyframes type {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .search-widget .typed {
+      clip-path: none;
+      animation: none;
+    }
+  }
+  .caret {
+    width: 7px;
+    height: 16px;
+    margin-left: 2px;
+    background: color-mix(in srgb, var(--primary) 70%, transparent);
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+  .results {
+    display: grid;
+    gap: 10px;
+  }
+  .results li {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    font-size: 13px;
+  }
+  :global(.js) .search-widget:not(.is-visible) .results li {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  :global(.js) .search-widget.is-visible .results li {
+    transition:
+      opacity 360ms var(--ease-out),
+      transform 360ms var(--ease-out);
+    transition-delay: calc(1250ms + var(--r) * 110ms);
+  }
+  .abbr {
+    display: grid;
+    place-items: center;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 4px;
+    border-radius: 6px;
+    background: var(--primary-soft);
+    color: var(--primary-ink);
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .price {
+    color: var(--primary);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .mono-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 24px;
+    padding: 12px 14px;
+    border-radius: var(--r);
+    background: var(--surface-container);
+    font: 500 12px var(--font-mono);
+    color: var(--text-2);
+  }
+  .sheet {
+    display: grid;
+    padding: 6px 16px;
+    border-radius: var(--r-md);
+    background: var(--device);
+    color: #cbd5e1;
+    font-size: 13px;
+  }
+  .sheet-row {
+    display: flex;
+    justify-content: space-between;
+    padding-block: 10px;
+  }
+  .sheet-row + .sheet-row {
+    border-top: 1px solid #1e293b;
+  }
+  .free {
+    color: #34d399;
+    font-weight: 600;
+  }
+  .total {
+    color: #fff;
+    font-weight: 600;
+  }
+  .total-amt {
+    color: #34d399;
+    font: 500 17px var(--font-mono);
+  }
+  .biometric {
+    display: flex;
+    gap: 14px;
+    padding: 16px;
+    border: 1px dashed color-mix(in srgb, var(--primary-bright) 50%, transparent);
+    border-radius: var(--r-md);
+    background: var(--primary-soft);
+    font-size: 13px;
+  }
+  .biometric :global(.icon) {
+    flex: none;
+    color: var(--primary);
+  }
+  .caption {
+    color: var(--text-muted);
+    font-size: 12px;
+    text-align: center;
+  }
+  .stream {
+    display: grid;
+    gap: 6px;
+    padding: 14px;
+    border-radius: var(--r);
+    background: var(--surface-low);
+    font: 500 11px var(--font-mono);
+    color: var(--text-2);
+  }
+  .stream-top {
+    display: flex;
+    justify-content: space-between;
+  }
+  .live {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--primary);
+    font-weight: 700;
+  }
+  .live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary-bright);
+    animation: blink 1.6s steps(1) infinite;
+  }
+  .coords {
+    color: var(--text);
+    font-size: 13px;
+  }
+  .mono {
+    font-family: var(--font-mono);
+  }
+  .kpis {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .kpis div {
+    display: grid;
+    gap: 2px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    text-align: center;
+  }
+  .kpis span {
+    font: 500 10px var(--font-mono);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .kpis strong {
+    color: var(--primary);
+    font: 600 14px var(--font-mono);
+  }
+  .impact-note {
+    display: flex;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
+    border-radius: var(--r);
+    background: var(--primary-soft);
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--text-2);
+  }
+  .impact-note :global(.icon) {
+    flex: none;
+    color: var(--primary);
+  }
+
+  /* Deep dive */
+  .deep {
+    display: grid;
+    gap: 24px;
+  }
+  @media (min-width: 1024px) {
+    .deep {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .deep-card {
+    display: grid;
+    align-content: start;
+    gap: 16px;
+    padding: 28px;
+  }
+  .deep-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .deep-card :global(.deep-icon) {
+    color: var(--primary);
+  }
+  .layers {
+    display: grid;
+    gap: 8px;
+  }
+  .layers li {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 4px 16px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    background: var(--surface-low);
+    font: 500 12px var(--font-mono);
+    color: var(--text-2);
+  }
+  .layers li span:first-child {
+    color: var(--primary);
+    font-weight: 600;
+  }
+  .mini-grid {
+    display: grid;
+    gap: 10px;
+  }
+  @media (min-width: 640px) {
+    .mini-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .mini-grid div {
+    padding: 12px 14px;
+    border-radius: var(--r);
+    background: var(--surface-low);
+    font-size: 13px;
+  }
+  .mini-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .mini-stats div {
+    display: grid;
+    gap: 4px;
+    padding: 14px 8px;
+    border-radius: var(--r);
+    background: var(--surface-low);
+    text-align: center;
+  }
+  .mini-stats strong {
+    color: var(--primary);
+    font: 600 18px var(--font-mono);
+  }
+  .mini-stats span {
+    color: var(--text-2);
+    font-size: 11px;
+  }
+
+  /* Impact */
+  .impact {
+    display: grid;
+    gap: 20px;
+  }
+  @media (min-width: 768px) {
+    .impact {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .impact {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .impact-card {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    overflow: hidden;
+    padding: 24px;
+  }
+  .impact-card::after {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+    background: var(--primary-soft);
+  }
+  .impact-label {
+    position: relative;
+    z-index: 1;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+  .impact-value {
+    color: var(--primary);
+    font-size: 40px;
+    line-height: 48px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .testimonial {
+    display: grid;
+    gap: 24px;
+    max-width: 56rem;
+    margin: 56px auto 0;
+    padding: 40px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    background: var(--surface-low);
+  }
+  .testimonial :global(.t-mark) {
+    color: color-mix(in srgb, var(--primary) 40%, transparent);
+  }
+  blockquote {
+    margin: 0;
+    font-size: 22px;
+    line-height: 32px;
+    font-style: italic;
+    font-weight: 500;
+  }
+  figcaption {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  figcaption > span:last-child {
+    display: grid;
+  }
+  .initials {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  /* Up next */
+  .next {
+    display: grid;
+    gap: 20px;
+    padding: 28px;
+    transition:
+      border-color var(--t-return) var(--ease-out),
+      box-shadow var(--t-return) var(--ease-out),
+      translate var(--t-return) var(--ease-out);
+  }
+  .next > div {
+    display: grid;
+    gap: 6px;
+  }
+  @media (min-width: 768px) {
+    .next {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      padding: 32px 40px;
+    }
+  }
+  .next:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-md);
+    translate: 0 -2px;
+    transition-duration: var(--t-hover);
+  }
+  .next-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary);
+    font-weight: 600;
+  }
+  .next-cta :global(.icon) {
+    transition: transform var(--t-hover) var(--ease-out);
+  }
+  .next:hover .next-cta :global(.icon) {
+    transform: translateX(4px);
+  }
+
+  /* CTA */
+  .cta {
+    display: grid;
+    gap: 12px;
+    justify-items: center;
+    padding: 56px 24px;
+    border-radius: var(--r-xl);
+    background:
+      radial-gradient(60% 80% at 50% 0%, color-mix(in srgb, var(--primary-bright) 22%, transparent), transparent),
+      var(--slate);
+    color: #fff;
+    text-align: center;
+  }
+  .cta-lead {
+    font-size: 18px;
+    font-weight: 500;
+    color: #e2e8f0;
+  }
+  .cta-body {
+    max-width: 38rem;
+    color: #94a3b8;
+  }
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .cta-meta {
+    margin-top: 8px;
+    color: #94a3b8;
+    font-size: 13px;
+  }
+</style>

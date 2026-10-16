@@ -4,12 +4,16 @@ import ArchitectureDiagram from '../../components/ArchitectureDiagram.astro';
 import Button from '../../components/Button.astro';
 import Icon from '../../components/Icon.astro';
 import ProjectMedia from '../../components/ProjectMedia.astro';
+import ProjectPreview from '../../components/phone/ProjectPreview.astro';
 import Base from '../../layouts/Base.astro';
 import { getProjects, platformLabel, type Project } from '../../lib/content';
 
 export async function getStaticPaths() {
   const projects = await getProjects();
-  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+  // Projects with `customPage: true` have their own page file instead.
+  return projects
+    .filter((project) => !project.data.customPage)
+    .map((project) => ({ params: { slug: project.id }, props: { project } }));
 }
 
 const { project } = Astro.props as { project: Project };
@@ -27,30 +31,30 @@ const hasMedia = Boolean(data.demo || data.video || data.screenshots.length);
 <Base title={data.name} description={`${data.tagline} ${data.summary}`}>
   <article>
     <header class="container header">
-      <div data-reveal style="--d: 0; --reveal-offset: 16px">
-        <Button href="/#work" variant="text" icon="arrow-left" leading>All work</Button>
+      <div data-reveal style="--d: 0; --rise: 16px">
+        <Button href="/#work" variant="link" icon="arrow-left" leading>All work</Button>
       </div>
-      <p class="eyebrow" data-reveal style="--d: 1; --reveal-offset: 16px">
+      <p class="eyebrow" data-reveal style="--d: 1; --rise: 16px">
         {data.kind === 'professional' ? 'Client work' : 'Case study'}
       </p>
-      <h1 class="display-xl" data-reveal style="--d: 2; --reveal-offset: 16px">{data.name}</h1>
-      <div class="intro" data-reveal style="--d: 3; --reveal-offset: 16px">
-        <p class="title">{data.tagline}</p>
-        <p class="lead">{data.summary}</p>
+      <h1 class="t-hero" data-reveal style="--d: 2; --rise: 16px">{data.name}</h1>
+      <div class="intro" data-reveal style="--d: 3; --rise: 16px">
+        <p class="t-headline-sm">{data.tagline}</p>
+        <p class="t-body-lg">{data.summary}</p>
       </div>
-      <div class="meta" data-reveal style="--d: 4; --reveal-offset: 16px">
-        <ul class="tags" aria-label="Technologies">
-          {data.tags.map((t) => <li>{t}</li>)}
+      <div class="meta" data-reveal style="--d: 4; --rise: 16px">
+        <ul class="chips" aria-label="Technologies">
+          {data.tags.map((t, i) => <li class:list={['chip', { 'chip-primary': i === 0 }]}>{t}</li>)}
         </ul>
         <p class="muted">{data.platforms.map((p) => platformLabel[p]).join(' · ')}</p>
       </div>
-      <div class="actions" data-reveal style="--d: 5; --reveal-offset: 16px">
+      <div class="actions" data-reveal style="--d: 5; --rise: 16px">
         {data.demo && <Button href="#demo" icon="play">Run the live app</Button>}
         {
           links.repo && (
             <Button
               href={links.repo}
-              variant={data.demo ? 'secondary' : 'primary'}
+              variant={data.demo ? 'outline' : 'primary'}
               icon="arrow-up-right"
               external
             >
@@ -58,9 +62,9 @@ const hasMedia = Boolean(data.demo || data.video || data.screenshots.length);
             </Button>
           )
         }
-        {links.playStore && <Button href={links.playStore} variant="secondary" icon="arrow-up-right" external>Google Play</Button>}
-        {links.appStore && <Button href={links.appStore} variant="secondary" icon="arrow-up-right" external>App Store</Button>}
-        {links.website && <Button href={links.website} variant="secondary" icon="arrow-up-right" external>Website</Button>}
+        {links.playStore && <Button href={links.playStore} variant="outline" icon="arrow-up-right" external>Google Play</Button>}
+        {links.appStore && <Button href={links.appStore} variant="outline" icon="arrow-up-right" external>App Store</Button>}
+        {links.website && <Button href={links.website} variant="outline" icon="arrow-up-right" external>Website</Button>}
       </div>
     </header>
 
@@ -69,7 +73,7 @@ const hasMedia = Boolean(data.demo || data.video || data.screenshots.length);
         data.metrics.length > 0 && (
           <dl class="metrics">
             {data.metrics.map((m, i) => (
-              <div class="card" data-reveal style={`--d: ${i}`}>
+              <div class="surface-card metric" data-reveal style={`--d: ${i}`}>
                 <dt class="muted">{m.label}</dt>
                 <dd class="stat-value" data-count={m.value}>{m.value}</dd>
               </div>
@@ -78,6 +82,13 @@ const hasMedia = Boolean(data.demo || data.video || data.screenshots.length);
         )
       }
 
+      {
+        !hasMedia && data.preview && (
+          <div class="preview" data-reveal="mask">
+            <ProjectPreview kind={data.preview} label={`${data.name} app screen`} />
+          </div>
+        )
+      }
       {
         hasMedia && (
           <div id="demo">
@@ -89,7 +100,7 @@ const hasMedia = Boolean(data.demo || data.video || data.screenshots.length);
       <section class="chapter">
         <div data-reveal>
           <p class="num">{num()}</p>
-          <h2 class="headline">The problem</h2>
+          <h2 class="t-headline-lg">The problem</h2>
         </div>
         <div class="prose" data-reveal style="--d: 1"><Content /></div>
       </section>
@@ -99,7 +110,7 @@ const hasMedia = Boolean(data.demo || data.video || data.screenshots.length);
           <section class="chapter">
             <div data-reveal>
               <p class="num">{num()}</p>
-              <h2 class="headline">Constraints</h2>
+              <h2 class="t-headline-lg">Constraints</h2>
             </div>
             <ul class="list" data-reveal style="--d: 1">
               {study.constraints.map((c) => <li>{c}</li>)}
@@ -113,8 +124,8 @@ const hasMedia = Boolean(data.demo || data.video || data.screenshots.length);
           <section class="chapter wide">
             <div data-reveal>
               <p class="num">{num()}</p>
-              <h2 class="headline">Architecture</h2>
-              <p class="lead chapter-intro">{study.architecture.intro}</p>
+              <h2 class="t-headline-lg">Architecture</h2>
+              <p class="t-body-lg chapter-intro">{study.architecture.intro}</p>
             </div>
             <ArchitectureDiagram layers={study.architecture.layers} />
           </section>
@@ -126,16 +137,16 @@ const hasMedia = Boolean(data.demo || data.video || data.screenshots.length);
           <section class="chapter wide">
             <div data-reveal>
               <p class="num">{num()}</p>
-              <h2 class="headline">Key decisions</h2>
-              <p class="lead chapter-intro">
+              <h2 class="t-headline-lg">Key decisions</h2>
+              <p class="t-body-lg chapter-intro">
                 Each one written as a lightweight ADR: the choice, why I made it, and what it costs.
               </p>
             </div>
             <div class="decisions">
               {study.decisions.map((d, i) => (
-                <section class="card decision" data-reveal style={`--d: ${i % 2}`}>
+                <section class="surface-card decision" data-reveal style={`--d: ${i % 2}`}>
                   <p class="eyebrow muted-eyebrow">{d.title}</p>
-                  <h3 class="title">{d.choice}</h3>
+                  <h3 class="t-headline-sm">{d.choice}</h3>
                   <p class="label why">Why</p>
                   <p class="text">{d.why}</p>
                   <p class="label">Tradeoff</p>
@@ -152,7 +163,7 @@ const hasMedia = Boolean(data.demo || data.video || data.screenshots.length);
           <section class="chapter">
             <div data-reveal>
               <p class="num">{num()}</p>
-              <h2 class="headline">Quality & delivery</h2>
+              <h2 class="t-headline-lg">Quality & delivery</h2>
             </div>
             <ul class="list checks" data-reveal style="--d: 1">
               {study.quality.map((q) => (
@@ -171,7 +182,7 @@ const hasMedia = Boolean(data.demo || data.video || data.screenshots.length);
           <section class="chapter">
             <div data-reveal>
               <p class="num">{num()}</p>
-              <h2 class="headline">What I would do differently</h2>
+              <h2 class="t-headline-lg">What I would do differently</h2>
             </div>
             <ul class="list" data-reveal style="--d: 1">
               {study.retrospective.map((r) => <li>{r}</li>)}
@@ -185,7 +196,7 @@ const hasMedia = Boolean(data.demo || data.video || data.screenshots.length);
           <section class="chapter">
             <div data-reveal>
               <p class="num">{num()}</p>
-              <h2 class="headline">What is next</h2>
+              <h2 class="t-headline-lg">What is next</h2>
             </div>
             <ul class="list" data-reveal style="--d: 1">
               {study.next.map((x) => <li>{x}</li>)}
@@ -198,6 +209,28 @@ const hasMedia = Boolean(data.demo || data.video || data.screenshots.length);
 </Base>
 
 <style>
+  .preview {
+    display: grid;
+    place-items: center;
+    padding: 48px 24px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    background:
+      radial-gradient(60% 70% at 50% 40%, color-mix(in srgb, var(--primary-bright) 12%, transparent), transparent),
+      var(--surface-low);
+    --phone-w: 280px;
+  }
+  .stat-value {
+    font-size: 32px;
+    line-height: 40px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--primary);
+    font-variant-numeric: tabular-nums;
+  }
+  .t-hero {
+    max-width: 22ch;
+  }
   .header {
     display: grid;
     gap: 16px;
@@ -238,7 +271,7 @@ const hasMedia = Boolean(data.demo || data.video || data.screenshots.length);
     gap: 16px;
     margin: 0;
   }
-  .metrics .card {
+  .metrics .metric {
     display: flex;
     flex-direction: column-reverse;
     justify-content: flex-end;

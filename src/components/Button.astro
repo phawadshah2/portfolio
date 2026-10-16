@@ -4,22 +4,27 @@ import Icon, { type IconName } from './Icon.astro';
 
 interface Props {
   href: string;
-  variant?: 'primary' | 'secondary' | 'text';
+  variant?: 'primary' | 'outline' | 'slate' | 'link';
+  size?: 'md' | 'sm';
   icon?: IconName;
   /** Icon before the label (e.g. a back arrow). */
   leading?: boolean;
   external?: boolean;
   download?: boolean;
+  /** Stretch to the full width of the container (mobile CTAs). */
+  block?: boolean;
   class?: string;
 }
 
 const {
   href,
   variant = 'primary',
+  size = 'md',
   icon,
   leading = false,
   external = false,
   download = false,
+  block = false,
   class: className,
 } = Astro.props;
 
@@ -28,23 +33,25 @@ const nudge: Partial<Record<IconName, string>> = {
   'arrow-right': '3px, 0',
   play: '3px, 0',
   'arrow-left': '-3px, 0',
+  'arrow-down': '0, 3px',
   'arrow-up-right': '2px, -2px',
   download: '0, 2px',
   mail: '0, -2px',
+  send: '2px, -2px',
 };
 ---
 
 <a
   href={url(href)}
-  class:list={['btn', `btn-${variant}`, className]}
-  style={icon && nudge[icon] ? `--nudge: ${nudge[icon]}` : undefined}
+  class:list={['btn', `btn-${variant}`, `btn-${size}`, { 'btn-block': block }, className]}
+  style={icon && nudge[icon as IconName] ? `--nudge: ${nudge[icon as IconName]}` : undefined}
   target={external ? '_blank' : undefined}
   rel={external ? 'noopener noreferrer' : undefined}
   download={download || undefined}
 >
-  {icon && leading && <Icon name={icon} />}
+  {icon && leading && <Icon name={icon} size={18} />}
   <span><slot /></span>
-  {icon && !leading && <Icon name={icon} />}
+  {icon && !leading && <Icon name={icon} size={18} />}
   {external && <span class="visually-hidden">(opens in a new tab)</span>}
 </a>
 
@@ -52,19 +59,33 @@ const nudge: Partial<Record<IconName, string>> = {
   .btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    min-height: 48px;
-    padding: 0 20px;
     border: 1px solid transparent;
-    border-radius: var(--radius-sm);
-    font-size: 0.9375rem;
+    border-radius: var(--r);
+    font-size: 14px;
+    line-height: 20px;
     font-weight: 600;
-    line-height: 1.2;
+    letter-spacing: 0.01em;
     white-space: nowrap;
+    cursor: pointer;
     transition:
       background-color var(--t-hover) var(--ease-out),
       border-color var(--t-hover) var(--ease-out),
-      color var(--t-hover) var(--ease-out);
+      color var(--t-hover) var(--ease-out),
+      box-shadow var(--t-hover) var(--ease-out),
+      transform var(--t-press) var(--ease-out);
+  }
+  .btn-md {
+    min-height: 48px;
+    padding: 0 24px;
+  }
+  .btn-sm {
+    min-height: 40px;
+    padding: 0 16px;
+  }
+  .btn-block {
+    width: 100%;
   }
   .btn :global(.icon) {
     transition: transform var(--t-hover) var(--ease-out);
@@ -74,28 +95,46 @@ const nudge: Partial<Record<IconName, string>> = {
       transform: translate(var(--nudge, 0, 0));
     }
   }
+  /* Press feedback. */
+  .btn:active {
+    transform: scale(0.98);
+  }
 
   .btn-primary {
-    background: var(--accent);
-    color: var(--on-accent);
+    background: var(--primary);
+    color: #fff;
+    box-shadow: var(--shadow-sm);
   }
   .btn-primary:hover {
-    background: color-mix(in srgb, var(--accent) 88%, var(--text));
+    background: var(--primary-hover);
+    box-shadow: 0 6px 16px -6px color-mix(in srgb, var(--primary) 60%, transparent);
   }
 
-  .btn-secondary {
-    border-color: var(--border);
+  .btn-outline {
+    background: var(--surface);
+    border-color: var(--border-strong);
     color: var(--text);
+    font-weight: 500;
   }
-  .btn-secondary:hover {
-    border-color: var(--text-muted);
+  .btn-outline:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
   }
 
-  .btn-text {
-    padding: 0 12px;
-    color: var(--text-2);
+  .btn-slate {
+    background: var(--slate);
+    color: #fff;
   }
-  .btn-text:hover {
-    color: var(--text);
+  .btn-slate:hover {
+    background: #334155;
+  }
+
+  .btn-link {
+    min-height: 0;
+    padding: 0;
+    color: var(--primary);
+  }
+  .btn-link:hover {
+    color: var(--primary-hover);
   }
 </style>

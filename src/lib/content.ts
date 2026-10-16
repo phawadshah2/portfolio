@@ -8,13 +8,14 @@ export async function getProfile() {
   return entry.data;
 }
 
-export async function getExperience() {
-  const items = await getCollection('experience');
-  return items.map((e) => e.data).sort((a, b) => a.order - b.order);
+export async function getHome() {
+  const entry = await getEntry('home', 'home');
+  if (!entry) throw new Error('src/content/home.yaml needs an entry with id "home"');
+  return entry.data;
 }
 
-export async function getSkills() {
-  const items = await getCollection('skills');
+export async function getExperience() {
+  const items = await getCollection('experience');
   return items.map((e) => e.data).sort((a, b) => a.order - b.order);
 }
 
@@ -22,6 +23,18 @@ export async function getProjects() {
   const items = await getCollection('projects');
   return items.sort(
     (a, b) => a.data.order - b.data.order || a.data.name.localeCompare(b.data.name),
+  );
+}
+
+/** True while any of the Stitch design's sample content is still in use. */
+export async function hasDraftContent() {
+  const [home, experience, projects] = await Promise.all([
+    getHome(),
+    getCollection('experience'),
+    getCollection('projects'),
+  ]);
+  return (
+    home.draft || experience.some((e) => e.data.draft) || projects.some((p) => p.data.draft)
   );
 }
 

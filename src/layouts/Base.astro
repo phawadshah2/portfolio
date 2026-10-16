@@ -3,8 +3,8 @@ import '../styles/global.css';
 import Footer from '../components/Footer.astro';
 import Nav from '../components/Nav.astro';
 import interUrl from '../assets/fonts/Inter-Regular.woff2?url';
-import groteskUrl from '../assets/fonts/SpaceGrotesk-Bold.woff2?url';
-import { getProfile } from '../lib/content';
+import interBoldUrl from '../assets/fonts/Inter-Bold.woff2?url';
+import { getHome, getProfile, hasDraftContent } from '../lib/content';
 import { url } from '../lib/paths';
 
 interface Props {
@@ -15,6 +15,8 @@ interface Props {
 }
 
 const profile = await getProfile();
+const home = await getHome();
+const isDraft = await hasDraftContent();
 const fullTitle = Astro.props.title
   ? `${Astro.props.title} · ${profile.name}`
   : `${profile.name} · ${profile.role}`;
@@ -62,38 +64,42 @@ const person = {
     {canonical && <meta property="og:url" content={canonical} />}
     <meta name="twitter:card" content="summary_large_image" />
 
-    <meta name="theme-color" content="#F7F8FA" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0B0F17" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#FFFFFF" />
+    {isDraft && <meta name="robots" content="noindex" />}
     <link rel="icon" type="image/png" href={url('/favicon.png')} />
     <link rel="apple-touch-icon" href={url('/icons/icon-192.png')} />
     <link rel="manifest" href={url('/manifest.webmanifest')} />
     {site && <link rel="sitemap" href={url('/sitemap-index.xml')} />}
 
     <link rel="preload" href={interUrl} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={groteskUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={interBoldUrl} as="font" type="font/woff2" crossorigin />
 
     <script type="application/ld+json" set:html={JSON.stringify(person)} />
 
-    <!-- Runs before first paint: applies the saved theme and enables reveal
-         styles only when JavaScript is available. -->
-    <script is:inline>
-      (function () {
-        var root = document.documentElement;
-        root.classList.add('js');
-        try {
-          var theme = localStorage.getItem('theme');
-          if (theme === 'light' || theme === 'dark') root.dataset.theme = theme;
-        } catch (e) {}
-      })();
-    </script>
+    <!-- Runs before first paint: reveal styles apply only when JavaScript is
+         available, so content is never hidden without it. -->
+    <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
-    <Nav name={profile.name} />
+    {
+      isDraft && (
+        <div class="draft-banner" role="note">
+          Draft preview · sample content from the design, not real data
+        </div>
+      )
+    }
+    <Nav name={profile.name} role={profile.role} cv={profile.cv} />
     <main id="main">
       <slot />
     </main>
-    <Footer name={profile.name} />
+    <Footer
+      name={profile.name}
+      email={home.contact.email}
+      whatsapp={home.contact.whatsapp}
+      linkedin={profile.linkedin}
+      github={profile.github}
+    />
 
     <script>
       import { initMotion } from '../scripts/motion';
@@ -101,3 +107,15 @@ const person = {
     </script>
   </body>
 </html>
+
+<style>
+  .draft-banner {
+    padding: 6px var(--gutter);
+    background: #fef3c7;
+    color: #78350f;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 0.01em;
+  }
+</style>

@@ -47,6 +47,12 @@ jobs:
           SITE_URL: ${{ steps.pages.outputs.origin }}
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
 
+      # Sample content from the design must never go live under your name.
+      # Fails (and blocks the deploy) while any `draft: true` remains.
+      - name: Refuse to publish draft content
+        if: github.ref == 'refs/heads/main'
+        run: npm run check:drafts
+
       - name: Upload site for GitHub Pages
         if: github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v4

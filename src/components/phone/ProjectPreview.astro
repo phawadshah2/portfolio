@@ -1,0 +1,240 @@
+---
+/** The design's mini phone screens shown on project cards. */
+import Icon from '../Icon.astro';
+import PhoneFrame from './PhoneFrame.astro';
+
+interface Props {
+  kind: 'aura' | 'cadence' | 'breathefree';
+  label: string;
+}
+const { kind, label } = Astro.props;
+---
+
+<PhoneFrame variant="mini" label={label}>
+  {
+    kind === 'aura' && (
+      <div class="mini aura">
+        <div class="head">
+          <span>Aura Store</span>
+          <Icon name="bag" size={16} />
+        </div>
+        <div class="product-img">
+          <Icon name="store" size={32} />
+        </div>
+        <div class="row">
+          <div>
+            <p class="strong">Minimal Linen Shirt</p>
+            <p class="sub">AED 189.00</p>
+          </div>
+          <span class="add">Add</span>
+        </div>
+        <div class="note">
+          <Icon name="bolt" size={14} />
+          Instant Express Delivery in 45m
+        </div>
+      </div>
+    )
+  }
+  {
+    kind === 'cadence' && (
+      <div class="mini cadence">
+        <div class="head">
+          <span>Daily Routines</span>
+          <span class="streak">Day 24 Streak 🔥</span>
+        </div>
+        <div class="task">
+          <Icon name="check-circle" size={16} />
+          <span class="strong">Morning Meditation</span>
+          <span class="sub">15 min</span>
+        </div>
+        <div class="task">
+          <Icon name="check-circle" size={16} />
+          <span class="strong">Dart Architecture Review</span>
+          <span class="sub">45 min</span>
+        </div>
+        <div class="insight">
+          <p class="insight-title">
+            <Icon name="sparkle" size={14} /> Cadence AI Insight
+          </p>
+          <p>Focus peaks at 10 AM. Scheduling deep-work widgets now.</p>
+        </div>
+      </div>
+    )
+  }
+  {
+    kind === 'breathefree' && (
+      <div class="mini breathe">
+        <div class="head">
+          <span>Health Timeline</span>
+          <span class="streak">120 Days Clean</span>
+        </div>
+        <div class="saved">
+          <p class="overline">Total Money Saved</p>
+          <p class="money" data-count="$1,840.00">$1,840.00</p>
+        </div>
+        <div class="meter">
+          <div class="meter-row">
+            <span>Oxygen Levels</span>
+            <span class="ok">100% Normalized</span>
+          </div>
+          <div class="track"><span style="--v: 1" /></div>
+        </div>
+        <div class="meter">
+          <div class="meter-row">
+            <span>Lung Capacity</span>
+            <span class="ok">92% Restored</span>
+          </div>
+          <div class="track"><span style="--v: 0.92" /></div>
+        </div>
+      </div>
+    )
+  }
+</PhoneFrame>
+
+<style>
+  .mini {
+    display: grid;
+    gap: 12px;
+    padding: 16px 14px;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+  .head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--surface-container);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .head :global(.icon) {
+    color: var(--primary);
+  }
+  .strong {
+    font-weight: 600;
+  }
+  .sub {
+    color: var(--text-2);
+    font-size: 10px;
+  }
+  .product-img {
+    display: grid;
+    place-items: center;
+    height: 110px;
+    border-radius: var(--r-md);
+    background: var(--surface-container);
+    color: #9ca3af;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .add {
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: var(--r);
+    background: var(--primary-soft);
+    color: var(--primary-ink);
+    font-size: 10px;
+    font-weight: 600;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary) 15%, transparent);
+  }
+  .streak {
+    color: var(--primary);
+    font-size: 10px;
+  }
+  .task {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    border-radius: var(--r);
+    border: 1px solid var(--surface-container);
+  }
+  .task :global(.icon) {
+    color: var(--primary);
+  }
+  .insight {
+    display: grid;
+    gap: 2px;
+    padding: 10px;
+    border-radius: var(--r);
+    background: var(--primary-soft);
+    color: var(--text-2);
+    font-size: 10px;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary) 20%, transparent);
+  }
+  .insight-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--primary-ink);
+    font-weight: 600;
+  }
+  .saved {
+    padding: 14px;
+    border-radius: var(--r-md);
+    border: 1px solid var(--surface-container);
+    text-align: center;
+  }
+  .overline {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .money {
+    margin-top: 2px;
+    color: var(--primary);
+    font-size: 20px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .meter {
+    display: grid;
+    gap: 6px;
+  }
+  .meter-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+  }
+  .ok {
+    color: var(--primary);
+    font-weight: 600;
+  }
+  .track {
+    height: 6px;
+    border-radius: 9999px;
+    background: var(--surface-container);
+    overflow: hidden;
+  }
+  .track span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--primary);
+    transform: scaleX(var(--v));
+    transform-origin: left;
+  }
+  /* Meters fill when their card reveals. */
+  :global(.js) :global([data-reveal]:not(.is-visible)) .track span {
+    transform: scaleX(0);
+  }
+  :global([data-reveal].is-visible) .track span {
+    transition: transform 900ms var(--ease-out) 250ms;
+  }
+</style>

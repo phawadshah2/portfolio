@@ -1,160 +1,124 @@
 ---
 import { Image } from 'astro:assets';
-import Icon from './Icon.astro';
-import { platformLabel, projectPath, type Project } from '../lib/content';
+import { projectPath, type Project } from '../lib/content';
 import { url } from '../lib/paths';
+import Icon from './Icon.astro';
+import PhoneFrame from './phone/PhoneFrame.astro';
+import ProjectPreview from './phone/ProjectPreview.astro';
 
 interface Props {
   project: Project;
-  /** Wide layout with metrics alongside, for featured placement. */
-  wide?: boolean;
-  delay?: number;
+  /** Position in the list, for the reveal stagger. */
+  index?: number;
 }
 
-const { project, wide = false, delay = 0 } = Astro.props;
+const { project, index = 0 } = Astro.props;
 const { data } = project;
 const href = url(projectPath(project));
-const metrics = wide ? data.metrics : data.metrics.slice(0, 2);
-// A wide `cover` fills the banner as is. Phone screenshots are portrait, so
-// they are shown as a row of phones instead of being cropped to a strip.
-const cover = data.cover;
-const phones = cover ? [] : data.screenshots.slice(0, wide ? 3 : 2);
+const shot = data.screenshots[0];
+const title = data.name;
 ---
 
-<article
-  class:list={['card card-link project', { wide }]}
-  data-reveal
-  style={`--d: ${delay}`}
->
-  {
-    cover && (
-      <div class="media">
-        <Image src={cover} alt="" width={wide ? 1100 : 640} loading="lazy" />
-      </div>
-    )
-  }
-  {
-    phones.length > 0 && (
-      <div class="media phones" aria-hidden="true">
-        {phones.map((shot, i) => (
-          <div class="phone" style={`--i: ${i}`}>
-            <Image src={shot.src} alt="" widths={[200, 400]} sizes="200px" loading="lazy" />
+<li class="slot" data-reveal style={`--d: ${index}; --stagger: 100ms; --rise: 20px; --dur: 540ms`}>
+  <article class="card" data-tilt>
+    <div class="body">
+      {
+        (data.badge || data.category) && (
+          <div class="pills">
+            {data.badge && <span class="pill pill-primary">{data.badge}</span>}
+            {data.category && <span class="pill pill-neutral">{data.category}</span>}
           </div>
-        ))}
+        )
+      }
+      <h3 class="t-headline-md title">
+        <!-- The whole card is clickable through this stretched link. -->
+        <a href={href} class="stretched">{title}</a>
+      </h3>
+      <p class="summary">{data.summary}</p>
+      <ul class="chips" aria-label="Technologies">
+        {data.tags.map((t, i) => <li class:list={['chip', { 'chip-primary': i === 0 }]}>{t}</li>)}
+      </ul>
+      <span class="more" aria-hidden="true">
+        View case study <Icon name="arrow-right" />
+      </span>
+    </div>
+
+    <div class="visual" aria-hidden={data.preview ? undefined : 'true'}>
+      <div class="visual-in">
+        {
+          data.preview ? (
+            <ProjectPreview kind={data.preview} label={`${data.name} app screen`} />
+          ) : (
+            shot && (
+              <PhoneFrame variant="mini">
+                <Image src={shot.src} alt="" widths={[260, 520]} sizes="260px" loading="lazy" class="shot" />
+              </PhoneFrame>
+            )
+          )
+        }
       </div>
-    )
-  }
-
-  <div class="body">
-    <p class="eyebrow">
-      {data.kind === 'professional' ? 'Client work' : 'Case study'}
-      {data.demo && <span class="live">· Live demo</span>}
-    </p>
-    <h3 class="headline">
-      <!-- The whole card is clickable through this stretched link. -->
-      <a href={href} class="stretched">{data.name}</a>
-    </h3>
-    <p class="tagline">{data.tagline}</p>
-    {wide && <p class="summary">{data.summary}</p>}
-    <ul class="tags" aria-label="Technologies">
-      {data.tags.map((t) => <li>{t}</li>)}
-    </ul>
-    <p class="platforms muted">{data.platforms.map((p) => platformLabel[p]).join(' · ')}</p>
-    <span class="more" aria-hidden="true">
-      Read the case study <Icon name="arrow-right" />
-    </span>
-  </div>
-
-  {
-    metrics.length > 0 && (
-      <dl class="metrics">
-        {metrics.map((m) => (
-          <div>
-            <dt class="muted">{m.label}</dt>
-            <dd class="stat-value" data-count={m.value}>{m.value}</dd>
-          </div>
-        ))}
-      </dl>
-    )
-  }
-</article>
+    </div>
+  </article>
+</li>
 
 <style>
-  .project {
+  .slot {
+    list-style: none;
+  }
+
+  .card {
+    --tilt-x: 0;
+    --tilt-y: 0;
     position: relative;
     display: grid;
-    gap: 24px;
-    padding: 0;
-    overflow: hidden;
-  }
-  .body {
-    display: grid;
-    gap: 12px;
-    align-content: start;
-    padding: clamp(24px, 3vw, 36px) clamp(24px, 3vw, 36px) 0;
-  }
-  .media {
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-    background: var(--surface-raised);
-    border-bottom: 1px solid var(--border);
-  }
-  .media :global(img) {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 500ms var(--ease-out);
-  }
-  /* Phone row: screens rise out of the bottom edge of a tinted panel. */
-  .phones {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    gap: clamp(12px, 3vw, 28px);
-    padding: 28px 24px 0;
-    background:
-      radial-gradient(80% 90% at 50% 100%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%),
-      var(--surface-raised);
-  }
-  .phone {
-    flex: 0 1 190px;
-    align-self: flex-end;
-    height: 100%;
-    overflow: hidden;
-    border: 5px solid #05070b;
-    border-bottom: 0;
-    border-radius: 24px 24px 0 0;
-    background: #05070b;
-    /* Middle phone sits a little higher, like a product banner. */
-    transform: translateY(calc((var(--i) - 1) * (var(--i) - 1) * 14px));
-    transition: transform 400ms var(--ease-out);
-  }
-  /* Always fill the frame; the bottom of the screen is cropped by the panel. */
-  .phones .phone :global(img) {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: top;
+    gap: 32px;
+    padding: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-sm);
+    /* Return to rest is a touch slower than the hover response. */
+    transform: perspective(1200px) rotateX(calc(var(--tilt-y) * -2.5deg))
+      rotateY(calc(var(--tilt-x) * 2.5deg));
+    transition:
+      transform var(--t-return) var(--ease-out),
+      border-color var(--t-return) var(--ease-out),
+      box-shadow var(--t-return) var(--ease-out);
   }
   @media (hover: hover) {
-    .project:hover .phone {
-      transform: translateY(calc((var(--i) - 1) * (var(--i) - 1) * 14px - 8px));
+    .card:hover {
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-md);
+      transition-duration: var(--t-hover);
     }
-    .project:hover .phone:nth-child(2) {
-      transition-delay: 40ms;
-    }
-    .project:hover .phone:nth-child(3) {
-      transition-delay: 80ms;
+  }
+  @media (min-width: 1024px) {
+    .card {
+      grid-template-columns: 7fr 5fr;
+      align-items: center;
+      gap: 48px;
+      padding: 40px;
     }
   }
 
-  @media (hover: hover) {
-    .project:hover .media:not(.phones) :global(img) {
-      transform: scale(1.03);
+  .body {
+    display: grid;
+    gap: 16px;
+    justify-items: start;
+    order: 2;
+  }
+  @media (min-width: 1024px) {
+    .body {
+      order: 1;
     }
   }
-  .live {
-    color: var(--success);
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .title a {
+    color: var(--text);
   }
   .stretched::after {
     content: '';
@@ -165,73 +129,69 @@ const phones = cover ? [] : data.screenshots.slice(0, wide ? 3 : 2);
   .stretched:focus-visible {
     outline: none;
   }
-  .project:has(.stretched:focus-visible) {
-    outline: 2px solid var(--accent);
+  .card:has(.stretched:focus-visible) {
+    outline: 2px solid var(--primary-bright);
     outline-offset: 3px;
   }
-  .tagline {
-    font-weight: 600;
-    font-size: 1.0625rem;
-  }
   .summary {
+    max-width: 52ch;
     color: var(--text-2);
   }
-  .platforms {
-    font-size: 0.875rem;
+  .chips {
+    margin-block: 8px 4px;
   }
   .more {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    margin-top: 4px;
-    color: var(--accent);
+    color: var(--primary);
+    font-size: 14px;
     font-weight: 600;
   }
   .more :global(.icon) {
     transition: transform var(--t-hover) var(--ease-out);
   }
   @media (hover: hover) {
-    .project:hover .more :global(.icon) {
+    .card:hover .more :global(.icon) {
       transform: translateX(4px);
     }
   }
+  /* Phones: an explicit, full-width affordance instead of hover cues. */
+  @media (hover: none) {
+    .more {
+      justify-content: center;
+      width: 100%;
+      padding: 10px 16px;
+      border-radius: var(--r);
+      background: var(--surface-low);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+  }
 
-  .metrics {
+  .visual {
+    order: 1;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    margin: 0;
-    padding: 0 clamp(24px, 3vw, 36px) clamp(24px, 3vw, 36px);
+    place-items: center;
+    padding: 8px 0;
+    --phone-w: min(260px, 100%);
   }
-  .metrics div {
-    display: flex;
-    flex-direction: column-reverse;
-    gap: 2px;
+  @media (min-width: 1024px) {
+    .visual {
+      order: 2;
+    }
   }
-  .metrics dt {
-    font-size: 0.875rem;
+  .visual-in {
+    transition: transform 400ms var(--ease-out);
   }
-  .metrics dd {
-    margin: 0;
+  @media (hover: hover) {
+    .card:hover .visual-in {
+      transform: scale(1.04);
+      transition-duration: var(--t-hover);
+    }
   }
-
-  @media (min-width: 1080px) {
-    .wide {
-      grid-template-columns: 3fr 2fr;
-      gap: 0;
-    }
-    .wide .media {
-      grid-column: 1 / -1;
-      aspect-ratio: 21 / 9;
-    }
-    .wide .body {
-      padding-bottom: clamp(24px, 3vw, 36px);
-    }
-    .wide .metrics {
-      align-content: center;
-      padding: clamp(24px, 3vw, 36px);
-      border-left: 1px solid var(--border);
-      margin-block: 36px;
-    }
+  .shot {
+    width: 100%;
+    height: auto;
   }
 </style>

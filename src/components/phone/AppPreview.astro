@@ -1,0 +1,277 @@
+---
+/**
+ * Interactive app preview: tabs switch the phone between real screens.
+ * - Accessible tabs (ARIA tab pattern, roving tabindex, arrow/Home/End keys).
+ * - 320ms crossfade + small slide in the direction of travel; controls give
+ *   180ms feedback. First screen shows immediately, nothing auto-cycles.
+ * - The phone frame never changes size, so the page never jumps.
+ */
+import AuraScreens from './AuraScreens.astro';
+import PhoneFrame from './PhoneFrame.astro';
+
+interface Screen {
+  id: 'browse' | 'detail' | 'tracking';
+  label: string;
+  title: string;
+  body: string;
+}
+interface Props {
+  screens: Screen[];
+  name: string;
+}
+const { screens, name } = Astro.props;
+const uid = `pv-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<div class="preview" data-preview>
+  <div class="tabs" role="tablist" aria-label={`${name} screens`}>
+    {
+      screens.map((s, i) => (
+        <button
+          type="button"
+          role="tab"
+          class="tab"
+          id={`${uid}-tab-${i}`}
+          aria-controls={`${uid}-panel-${i}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          tabindex={i === 0 ? 0 : -1}
+          data-index={i}
+        >
+          <span class="tab-num">{String(i + 1).padStart(2, '0')}</span>
+          <span class="tab-text">
+            <span class="tab-label">{s.label}</span>
+            <span class="tab-title">{s.title}</span>
+            <span class="tab-body">{s.body}</span>
+          </span>
+        </button>
+      ))
+    }
+  </div>
+
+  <div class="stage">
+    <div class="glow" aria-hidden="true"></div>
+    <PhoneFrame class="phone">
+      <div class="screens">
+        {
+          screens.map((s, i) => (
+            <div
+              class:list={['screen', { 'is-active': i === 0 }]}
+              role="tabpanel"
+              id={`${uid}-panel-${i}`}
+              aria-labelledby={`${uid}-tab-${i}`}
+              data-screen={i}
+              inert={i === 0 ? undefined : true}
+            >
+              <AuraScreens screen={s.id} />
+            </div>
+          ))
+        }
+      </div>
+    </PhoneFrame>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-preview]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[data-screen]')];
+    let current = 0;
+
+    const select = (next: number, focus = false) => {
+      if (next === current) return;
+      // Slide direction follows the order of the tabs.
+      root.style.setProperty('--dir', next > current ? '1' : '-1');
+      tabs.forEach((tab, i) => {
+        const on = i === next;
+        tab.setAttribute('aria-selected', String(on));
+        tab.tabIndex = on ? 0 : -1;
+      });
+      panels.forEach((panel, i) => {
+        const on = i === next;
+        panel.classList.toggle('is-active', on);
+        panel.classList.toggle('was-active', i === current);
+        panel.inert = !on;
+      });
+      current = next;
+      if (focus) tabs[next].focus();
+    };
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(i));
+      tab.addEventListener('keydown', (event) => {
+        const keys: Record<string, number> = {
+          ArrowRight: (current + 1) % tabs.length,
+          ArrowDown: (current + 1) % tabs.length,
+          ArrowLeft: (current - 1 + tabs.length) % tabs.length,
+          ArrowUp: (current - 1 + tabs.length) % tabs.length,
+          Home: 0,
+          End: tabs.length - 1,
+        };
+        if (event.key in keys) {
+          event.preventDefault();
+          select(keys[event.key], true);
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+  .preview {
+    --dir: 1;
+    display: grid;
+    gap: 32px;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .preview {
+      grid-template-columns: 5fr 7fr;
+      gap: 56px;
+    }
+  }
+
+  /* Phones: tabs become a horizontal segmented control above the phone. */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    order: 1;
+  }
+  .stage {
+    order: 2;
+  }
+  @media (min-width: 1024px) {
+    .tabs {
+      flex-direction: column;
+      overflow: visible;
+      order: 1;
+    }
+  }
+  .tab {
+    display: flex;
+    flex: none;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    background: var(--surface);
+    text-align: left;
+    cursor: pointer;
+    transition:
+      border-color 180ms var(--ease-out),
+      background-color 180ms var(--ease-out),
+      box-shadow 180ms var(--ease-out),
+      transform var(--t-press) var(--ease-out);
+  }
+  .tab:hover {
+    border-color: var(--border-strong);
+  }
+  .tab:active {
+    transform: scale(0.98);
+  }
+  .tab:focus-visible {
+    outline: 2px solid var(--primary-bright);
+    outline-offset: 2px;
+  }
+  .tab[aria-selected='true'] {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+    box-shadow: inset 0 0 0 1px var(--primary);
+  }
+  .tab-num {
+    display: none;
+    font: 500 12px/24px var(--font-mono);
+    color: var(--text-muted);
+  }
+  .tab[aria-selected='true'] .tab-num,
+  .tab[aria-selected='true'] .tab-label {
+    color: var(--primary-ink);
+  }
+  .tab-text {
+    display: grid;
+    gap: 2px;
+  }
+  .tab-label {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .tab-title,
+  .tab-body {
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    .tab {
+      padding: 18px 20px;
+      border-radius: var(--r-lg);
+    }
+    .tab-num {
+      display: block;
+    }
+    .tab-label {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .tab-title {
+      display: block;
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 24px;
+    }
+    .tab-body {
+      display: block;
+      color: var(--text-2);
+      font-size: 14px;
+      line-height: 21px;
+    }
+  }
+
+  .stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: 32px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    background: var(--surface-low);
+    --phone-w: min(300px, 100%);
+    overflow: hidden;
+  }
+  .glow {
+    position: absolute;
+    inset: 15% 20%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--primary-bright) 14%, transparent), transparent);
+  }
+  .stage :global(.phone) {
+    position: relative;
+  }
+
+  .screens {
+    display: grid;
+    flex: 1;
+    min-height: 0;
+  }
+  .screen {
+    display: flex;
+    grid-area: 1 / 1;
+    flex-direction: column;
+    min-height: 0;
+    opacity: 0;
+    transform: translateX(calc(var(--dir) * 18px));
+    transition:
+      opacity 320ms var(--ease-out),
+      transform 320ms var(--ease-out);
+  }
+  .screen.was-active:not(.is-active) {
+    transform: translateX(calc(var(--dir) * -18px));
+  }
+  .screen.is-active {
+    opacity: 1;
+    transform: none;
+  }
+</style>

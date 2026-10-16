@@ -1,0 +1,154 @@
+---
+import Icon from '../Icon.astro';
+
+interface Props {
+  email: string;
+  projectTypes: string[];
+}
+const { email, projectTypes } = Astro.props;
+---
+
+<!-- Static site, no backend: submitting opens the visitor's mail app with
+     the message pre-filled. Without JS the browser's mailto form fallback
+     is used. -->
+<form class="form" action={`mailto:${email}`} method="post" enctype="text/plain" data-contact={email}>
+  <div class="field">
+    <label for="cf-name">Full Name</label>
+    <input id="cf-name" name="name" autocomplete="name" placeholder="e.g. Omar Khalid" required />
+  </div>
+  <div class="field">
+    <label for="cf-email">Work Email</label>
+    <input id="cf-email" name="email" type="email" autocomplete="email" placeholder="omar@company.ae" required />
+  </div>
+  <div class="field">
+    <label for="cf-type">Project Type</label>
+    <div class="select">
+      <select id="cf-type" name="type">
+        {projectTypes.map((t) => <option>{t}</option>)}
+      </select>
+      <Icon name="chevron-down" size={18} />
+    </div>
+  </div>
+  <div class="field">
+    <label for="cf-msg">Project Details / Message</label>
+    <textarea
+      id="cf-msg"
+      name="message"
+      rows="4"
+      placeholder="Briefly describe what you're building, timeline, and current stage..."
+      required></textarea>
+  </div>
+  <button type="submit" class="submit">
+    Send Project Inquiry
+    <Icon name="send" size={18} />
+  </button>
+  <p class="status" role="status" aria-live="polite"></p>
+</form>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('[data-contact]').forEach((form) => {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      const data = new FormData(form);
+      const subject = `${data.get('type')} — ${data.get('name')}`;
+      const body = `${data.get('message')}\n\n${data.get('name')}\n${data.get('email')}`;
+      window.location.href = `mailto:${form.dataset.contact}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      const status = form.querySelector('.status');
+      if (status) status.textContent = 'Opening your email app…';
+    });
+  });
+</script>
+
+<style>
+  .form {
+    display: grid;
+    gap: 20px;
+  }
+  .field {
+    display: grid;
+    gap: 8px;
+  }
+  label {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  input,
+  select,
+  textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 15px;
+    transition:
+      border-color var(--t-hover) var(--ease-out),
+      box-shadow var(--t-hover) var(--ease-out);
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: #9ca3af;
+  }
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--primary-bright);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-bright) 15%, transparent);
+  }
+  textarea {
+    resize: vertical;
+  }
+  .select {
+    position: relative;
+  }
+  select {
+    appearance: none;
+    padding-right: 40px;
+  }
+  .select :global(.icon) {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    translate: 0 -50%;
+    pointer-events: none;
+    color: var(--text-2);
+  }
+  .submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 52px;
+    border: 0;
+    border-radius: var(--r);
+    background: var(--primary);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background-color var(--t-hover) var(--ease-out),
+      transform var(--t-press) var(--ease-out);
+  }
+  .submit :global(.icon) {
+    transition: transform var(--t-hover) var(--ease-out);
+  }
+  .submit:hover {
+    background: var(--primary-hover);
+  }
+  .submit:hover :global(.icon) {
+    transform: translate(2px, -2px);
+  }
+  .submit:active {
+    transform: scale(0.98);
+  }
+  .status {
+    min-height: 1em;
+    color: var(--text-muted);
+    font-size: 13px;
+    text-align: center;
+  }
+</style>

@@ -1,3 +1,6 @@
+# REAL DATA (not loaded). Your real skill groups, kept for when the draft
+# "Curated Technical Stack" in home.yaml is replaced.
+
 - id: flutter-dart
   order: 1
   title: Flutter & Dart
